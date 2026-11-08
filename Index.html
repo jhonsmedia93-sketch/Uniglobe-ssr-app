@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uniglobe & Allura - SSR Master Consolidator</title>
+    <!-- Theme & App Manifest for Mobile/Tablet installation -->
+    <meta name="theme-color" content="#5C0620">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SSR Master">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel Exports -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- PDF.js for PDF Reading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-maroon: #5C0620;
+            --secondary-maroon: #3D0415;
+            --gold-accent: #D4AF37;
+            --gold-hover: #B89628;
+            --navy-dark: #0A192F;
+            --bg-light: #F8F9FA;
+            --card-border: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Top Header Navigation */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-maroon) 0%, var(--secondary-maroon) 100%);
+            border-bottom: 3px solid var(--gold-accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .brand-logo-text {
+            color: #FFFFFF;
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-subtext {
+            color: var(--gold-accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: block;
+            margin-top: -3px;
+        }
+
+        .nav-link-custom {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 600;
+            padding: 8px 16px !important;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link-custom:hover, .nav-link-custom.active {
+            color: var(--gold-accent) !important;
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* Login Screen Card */
+        .login-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(92, 6, 32, 0.2);
+            overflow: hidden;
+            background: #FFFFFF;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary-maroon) 0%, var(--secondary-maroon) 100%);
+            padding: 30px 20px;
+            color: #FFF;
+            text-align: center;
+            border-bottom: 3px solid var(--gold-accent);
+        }
+
+        .btn-maroon {
+            background-color: var(--primary-maroon);
+            color: #FFFFFF;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-maroon:hover {
+            background-color: var(--secondary-maroon);
+            color: var(--gold-accent);
+        }
+
+        .btn-gold {
+            background-color: var(--gold-accent);
+            color: var(--secondary-maroon);
+            font-weight: 700;
+            border: none;
+        }
+
+        .btn-gold:hover {
+            background-color: var(--gold-hover);
+            color: #000;
+        }
+
+        /* KPI Dash Cards */
+        .kpi-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid var(--primary-maroon);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .kpi-card.gold-border {
+            border-left-color: var(--gold-accent);
+        }
+
+        .kpi-card.navy-border {
+            border-left-color: var(--navy-dark);
+        }
+
+        .kpi-title {
+            font-size: 0.85rem;
+            color: #6C757D;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .kpi-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-maroon);
+            margin-top: 5px;
+        }
+
+        /* 60+ Distributor Consolidated Grid Table Styling */
+        .table-matrix-wrapper {
+            max-height: 650px;
+            overflow: auto;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: #FFF;
+        }
+
+        .table-matrix {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .table-matrix th {
+            background-color: var(--primary-maroon);
+            color: #FFFFFF;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 12px 10px;
+            border-bottom: 2px solid var(--gold-accent);
+        }
+
+        .table-matrix th.master-col-header {
+            background-color: var(--secondary-maroon);
+            color: var(--gold-accent);
+            z-index: 11;
+        }
+
+        /* Sticky Columns for Product Master Details */
+        .sticky-col-1 { position: sticky; left: 0; z-index: 5; background-color: #FFF !important; }
+        .sticky-col-2 { position: sticky; left: 50px; z-index: 5; background-color: #FFF !important; }
+        .sticky-col-3 { position: sticky; left: 130px; z-index: 5; background-color: #FFF !important; }
+        .sticky-col-4 { position: sticky; left: 340px; z-index: 5; background-color: #FFF !important; }
+
+        tr:nth-child(even) td.sticky-col-1,
+        tr:nth-child(even) td.sticky-col-2,
+        tr:nth-child(even) td.sticky-col-3,
+        tr:nth-child(even) td.sticky-col-4 {
+            background-color: #F8F9FA !important;
+        }
+
+        .table-matrix td {
+            vertical-align: middle;
+            padding: 8px 10px;
+        }
+
+        .total-row td {
+            background-color: #FFF8E7 !important;
+            font-weight: 800;
+            color: var(--primary-maroon);
+            border-top: 2px solid var(--gold-accent);
+            border-bottom: 2px solid var(--gold-accent);
+            position: sticky;
+            bottom: 0;
+            z-index: 9;
+        }
+
+        .badge-allura {
+            background-color: var(--primary-maroon);
+            color: var(--gold-accent);
+            font-size: 0.72rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .badge-uniglobe {
+            background-color: var(--navy-dark);
+            color: #FFF;
+            font-size: 0.72rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Drag & Drop Upload Zone */
+        .upload-dropzone {
+            border: 2px dashed var(--primary-maroon);
+            border-radius: 12px;
+            background-color: #FFF8FA;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-dropzone:hover {
+            background-color: #F3E6EA;
+            border-color: var(--gold-accent);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-maroon);
+            margin-bottom: 10px;
+        }
+
+        /* Screen Toggle display */
+        .screen-view {
+            display: none;
+        }
+        .screen-view.active-screen {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top" id="mainNavbar">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fa-solid fa-boxes-stacked text-warning me-3 fs-3"></i>
+                <div>
+                    <span class="brand-logo-text">UNIGLOBE & ALLURA</span>
+                    <span class="brand-subtext">SSR CONSOLIDATION & DISTRIBUTOR ANALYTICS</span>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-3" id="navLinks" style="display: none;">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom active" href="#" onclick="switchScreen('dashboardScreen')">
+                            <i class="fa-solid fa-chart-line me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="#" onclick="switchScreen('uploadScreen')">
+                            <i class="fa-solid fa-file-arrow-up me-1"></i> Upload SSRs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="#" onclick="switchScreen('matrixScreen')">
+                            <i class="fa-solid fa-table-cells me-1"></i> 60+ Master Sheet
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="#" onclick="switchScreen('catalogScreen')">
+                            <i class="fa-solid fa-list-check me-1"></i> Rates Catalog
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center" id="userBadgeArea" style="display: none;">
+                    <span class="badge bg-warning text-dark me-2 font-monospace" id="currentUserDisplay">RSM Manager</span>
+                    <button class="btn btn-sm btn-outline-light" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container-fluid px-4 py-4">
+
+        <!-- ================= 1. LOGIN SCREEN ================= -->
+        <div id="loginScreen" class="screen-view active-screen">
+            <div class="row justify-content-center align-items-center mt-5">
+                <div class="col-md-5 col-lg-4">
+                    <div class="card login-card">
+                        <div class="login-header">
+                            <i class="fa-solid fa-shield-halved fs-1 text-warning mb-2"></i>
+                            <h4 class="fw-bold mb-1">SSR Portal Login</h4>
+                            <p class="small text-light mb-0">Uniglobe Marketing & Allura Holdings</p>
+                        </div>
+                        <div class="card-body p-4">
+                            <form id="loginForm" onsubmit="handleLogin(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Username / RSM ID</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                        <input type="text" id="loginUsername" class="form-control" value="admin" required>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                        <input type="password" id="loginPassword" class="form-control" value="12345" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-maroon w-100 py-2 fs-6 shadow-sm">
+                                    <i class="fa-solid fa-right-to-bracket me-2"></i> Access Dashboard
+                                </button>
+                            </form>
+                            <div class="text-center mt-3">
+                                <small class="text-muted"><i class="fa-solid fa-lock me-1"></i> Secured Operational Sales Engine</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 2. DASHBOARD & INSIGHTS ================= -->
+        <div id="dashboardScreen" class="screen-view">
+            <!-- Top Controls Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-pie me-2 text-danger"></i> Executive Overview</h3>
+                    <p class="text-muted small mb-0">Consolidated Sales & Stock Performance across all Regional Channels</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-gold shadow-sm" onclick="load60SampleDistributors()">
+                        <i class="fa-solid fa-bolt me-1"></i> Load 60+ Sample SSR Network
+                    </button>
+                    <button class="btn btn-maroon shadow-sm" onclick="exportMasterExcel()">
+                        <i class="fa-solid fa-file-excel me-1"></i> Download Master Sheet (.xlsx)
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Metric Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Active Distributors</div>
+                        <div class="kpi-value" id="kpiDistributorCount">0</div>
+                        <small class="text-muted"><i class="fa-solid fa-truck me-1"></i> Regional Partners</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card gold-border">
+                        <div class="kpi-title">Total SSR Units Sold</div>
+                        <div class="kpi-value" id="kpiTotalUnits">0</div>
+                        <small class="text-muted"><i class="fa-solid fa-box-open me-1"></i> Physical Packs</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card navy-border">
+                        <div class="kpi-title">Grand Net Revenue</div>
+                        <div class="kpi-value text-dark" id="kpiGrandRevenue">Rs. 0</div>
+                        <small class="text-muted"><i class="fa-solid fa-money-bill-wave me-1"></i> Total Trade Value</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Active Portfolio SKUs</div>
+                        <div class="kpi-value" id="kpiSKUCount">18</div>
+                        <small class="text-muted"><i class="fa-solid fa-capsules me-1"></i> Allura & Uniglobe Products</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-5">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white fw-bold py-3">
+                            <i class="fa-solid fa-pie-chart text-danger me-2"></i> Company Revenue Share
+                        </div>
+                        <div class="card-body d-flex justify-content-center align-items-center">
+                            <div style="width: 280px; height: 280px;">
+                                <canvas id="chartCompanyShare"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white fw-bold py-3">
+                            <i class="fa-solid fa-chart-column text-primary me-2"></i> Top Performing Regional Distributors (Revenue)
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartTopDistributors" style="max-height: 270px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 3. UPLOAD SSR REPORTS ================= -->
+        <div id="uploadScreen" class="screen-view">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3 fw-bold fs-5">
+                            <i class="fa-solid fa-cloud-arrow-up text-danger me-2"></i> Upload Distributor Sales & Stock Reports (SSRs)
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="upload-dropzone mb-4" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                                <i class="fa-solid fa-file-pdf upload-icon"></i>
+                                <h5>Drag & Drop PDF / Excel SSR Reports Here</h5>
+                                <p class="text-muted small">Upload multiple PDF files, Excel sheets (.xlsx), or CSV reports from your 60+ distributors.</p>
+                                <button class="btn btn-sm btn-maroon px-4 mt-2">Browse Files</button>
+                                <input type="file" id="fileInput" multiple accept=".pdf,.xlsx,.xls,.csv" class="d-none" onchange="handleFileSelect(event)">
+                            </div>
+
+                            <div class="alert alert-info border-0 shadow-sm">
+                                <h6><i class="fa-solid fa-circle-info me-2"></i> Smart Automated Parsing Engine</h6>
+                                <p class="small mb-0">The system automatically reads layout patterns for Uniglobe Healthcare & Allura Holdings formats, extracting Distributor Names, Quantities, and Net Rates instantly.</p>
+                            </div>
+
+                            <!-- Upload Log List -->
+                            <div class="mt-4">
+                                <h6 class="fw-bold">Uploaded Files Progress (<span id="uploadedCount">0</span>)</h6>
+                                <ul class="list-group" id="uploadFileList">
+                                    <li class="list-group-item text-muted text-center py-3">No files uploaded yet. Click "Load 60+ Sample SSR Network" button on dashboard for instant test data.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 4. 60+ DISTRIBUTOR MASTER MATRIX SHEET ================= -->
+        <div id="matrixScreen" class="screen-view">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-table me-2 text-danger"></i> Consolidated 60+ Distributor SSR Matrix</h4>
+                    <small class="text-muted">Master Details (Company, SKUs, Rates) on Left + Dynamic Horizontal Distributor Columns</small>
+                </div>
+                <div class="d-flex gap-2">
+                    <input type="text" id="matrixSearch" class="form-control form-control-sm" placeholder="Filter Product Name..." onkeyup="filterMatrixTable()" style="width: 200px;">
+                    <button class="btn btn-sm btn-success fw-bold" onclick="exportMasterExcel()">
+                        <i class="fa-solid fa-file-excel me-1"></i> Export Excel (.xlsx)
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-matrix-wrapper">
+                <table class="table table-bordered table-hover align-middle table-matrix" id="masterMatrixTable">
+                    <thead>
+                        <tr id="matrixHeaderRow">
+                            <th class="sticky-col-1 master-col-header" style="min-width: 50px;">S.No</th>
+                            <th class="sticky-col-2 master-col-header" style="min-width: 80px;">Company</th>
+                            <th class="sticky-col-3 master-col-header" style="min-width: 210px;">Product Description</th>
+                            <th class="sticky-col-4 master-col-header" style="min-width: 100px;">Net Rate (Rs)</th>
+                            <!-- Dynamic 60+ Distributor Columns Will Inject Here -->
+                            <th style="min-width: 110px;" class="bg-warning text-dark text-center">TOTAL QTY</th>
+                            <th style="min-width: 130px;" class="bg-danger text-white text-center">TOTAL AMOUNT (Rs)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixTableBody">
+                        <!-- Product Rows Inject Here -->
+                    </tbody>
+                    <tfoot id="matrixTableFoot">
+                        <!-- Grand Totals Inject Here -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= 5. PRODUCT & RATE CATALOG EDITOR ================= -->
+        <div id="catalogScreen" class="screen-view">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="fw-bold mb-0"><i class="fa-solid fa-sliders me-2 text-danger"></i> Product Master Rate Catalog</h4>
+                    <p class="text-muted small mb-0">Manage Trade Rates, Net Rates, and SKU Details for Allura & Uniglobe</p>
+                </div>
+                <button class="btn btn-maroon btn-sm" onclick="addNewProductModal()"><i class="fa-solid fa-plus me-1"></i> Add New Product SKU</button>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0 align-middle" id="catalogTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Company</th>
+                                    <th>Product Name</th>
+                                    <th>Trade Rate (Rs)</th>
+                                    <th>Net Rate (Rs)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="catalogTableBody">
+                                <!-- Catalog items inject here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- CORE JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        // ================= MASTER DATA STATE =================
+        let defaultProducts = [
+            { id: 1, company: 'Uniglobe', name: 'Liquet Oral Shots', tradeRate: 475, netRate: 130 },
+            { id: 2, company: 'Uniglobe', name: 'Omnimax 20mg Capsule', tradeRate: 350, netRate: 220 },
+            { id: 3, company: 'Uniglobe', name: 'Uni-Cal D Syrup', tradeRate: 240, netRate: 120 },
+            { id: 4, company: 'Uniglobe', name: 'Zest-Vite Suspension', tradeRate: 300, netRate: 140 },
+            { id: 5, company: 'Uniglobe', name: 'Gastro-Fix Sachet', tradeRate: 400, netRate: 180 },
+            { id: 6, company: 'Uniglobe', name: 'Neuroglobe Injection', tradeRate: 600, netRate: 310 },
+            { id: 7, company: 'Uniglobe', name: 'Hepasafe Syrup 120ml', tradeRate: 320, netRate: 155 },
+            { id: 8, company: 'Uniglobe', name: 'Respi-Clear Cough Syrup', tradeRate: 220, netRate: 105 },
+            { id: 9, company: 'Uniglobe', name: 'Dermashield Cream', tradeRate: 280, netRate: 135 },
+
+            { id: 10, company: 'Allura', name: 'Allura Soft-Gel Cap 10k UI', tradeRate: 550, netRate: 260 },
+            { id: 11, company: 'Allura', name: 'Allura Collagen Peptides', tradeRate: 1200, netRate: 650 },
+            { id: 12, company: 'Allura', name: 'Allura Glow Serum 30ml', tradeRate: 950, netRate: 480 },
+            { id: 13, company: 'Allura', name: 'Allura Vita-C Effervescent', tradeRate: 380, netRate: 195 },
+            { id: 14, company: 'Allura', name: 'Allura Hair Care Cap', tradeRate: 750, netRate: 390 },
+            { id: 15, company: 'Allura', name: 'Allura Anti-Aging Night Lotion', tradeRate: 880, netRate: 440 },
+            { id: 16, company: 'Allura', name: 'Allura Sunblock SPF-60', tradeRate: 450, netRate: 230 },
+            { id: 17, company: 'Allura', name: 'Allura Omega-3 Extra', tradeRate: 650, netRate: 330 },
+            { id: 18, company: 'Allura', name: 'Allura Hydra Mist', tradeRate: 390, netRate: 190 }
+        ];
+
+        let distributorsList = []; // Array of distributor names e.g. ["Pharmaline Gujranwala", "Tahir Lahore", ...]
+        let ssrMatrixData = {}; // Object: { productId: { distributorName: qty } }
+        let chartShareInstance = null;
+        let chartBarInstance = null;
+
+        // Init App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCatalogFromStorage();
+            renderCatalogTable();
+        });
+
+        // Navigation Switcher
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+            
+            document.querySelectorAll('.nav-link-custom').forEach(el => el.classList.remove('active'));
+            
+            if (screenId === 'matrixScreen') {
+                renderMasterMatrix();
+            } else if (screenId === 'dashboardScreen') {
+                updateDashboardCharts();
+            }
+        }
+
+        // Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+
+            if (u && p) {
+                document.getElementById('loginScreen').classList.remove('active-screen');
+                document.getElementById('dashboardScreen').classList.add('active-screen');
+                document.getElementById('navLinks').style.display = 'flex';
+                document.getElementById('userBadgeArea').style.display = 'flex';
+                document.getElementById('currentUserDisplay').innerText = u.toUpperCase() + ' (RSM)';
+                
+                // Load initial sample data
+                load60SampleDistributors();
+            }
+        }
+
+        function logout() {
+            document.getElementById('navLinks').style.display = 'none';
+            document.getElementById('userBadgeArea').style.display = 'none';
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.remove('active-screen'));
+            document.getElementById('loginScreen').classList.add('active-screen');
+        }
+
+        // ================= SIMULATOR FOR 60+ DISTRIBUTORS =================
+        function load60SampleDistributors() {
+            const cities = ['Gujranwala', 'Lahore', 'Faisalabad', 'Sheikhupura', 'Rawalpindi', 'Multan', 'Karachi', 'Peshawar', 'Swat', 'D.I. Khan', 'Mianwali', 'Sargodha', 'Bahawalpur', 'Abbottabad'];
+            const prefixes = ['Pharmaline', 'United Medical', 'Al-Razi Traders', 'Crown Distribution', 'Allied Med', 'Shaheen Agency', 'Star Pharma Services', 'Khyber Med', 'Indus Healthcare'];
+            
+            distributorsList = [];
+            let counter = 1;
+
+            // Generate 62 Realistic Distributor Entries
+            for (let c of cities) {
+                for (let p of prefixes) {
+                    if (counter <= 62) {
+                        distributorsList.push(`${p} - ${c} (#${counter})`);
+                        counter++;
+                    }
+                }
+            }
+
+            // Populate Random SSR Quantities
+            ssrMatrixData = {};
+            defaultProducts.forEach(prod => {
+                ssrMatrixData[prod.id] = {};
+                distributorsList.forEach((dist, idx) => {
+                    // Introduce varying stock quantities per product
+                    let baseQty = Math.floor(Math.random() * 250);
+                    if (idx % 4 === 0) baseQty = 0; // Simulated zero stock / non-ordering
+                    ssrMatrixData[prod.id][dist] = baseQty;
+                });
+            });
+
+            // Refresh UI Views
+            renderMasterMatrix();
+            updateDashboardCharts();
+            alert('Success: 62 Regional Distributor Reports loaded into 60+ Master Grid!');
+        }
+
+        // ================= MATRIX TABLE RENDERER =================
+        function renderMasterMatrix() {
+            const headerRow = document.getElementById('matrixHeaderRow');
+            const tbody = document.getElementById('matrixTableBody');
+            const tfoot = document.getElementById('matrixTableFoot');
+
+            // 1. Build Header
+            let headerHTML = `
+                <th class="sticky-col-1 master-col-header" style="min-width: 50px;">S.No</th>
+                <th class="sticky-col-2 master-col-header" style="min-width: 80px;">Company</th>
+                <th class="sticky-col-3 master-col-header" style="min-width: 210px;">Product Description</th>
+                <th class="sticky-col-4 master-col-header" style="min-width: 100px;">Net Rate</th>
+            `;
+
+            distributorsList.forEach(dist => {
+                headerHTML += `<th style="min-width: 120px;" class="text-center bg-dark text-white">${dist}</th>`;
+            });
+
+            headerHTML += `
+                <th style="min-width: 110px;" class="bg-warning text-dark text-center fw-bold">TOTAL QTY</th>
+                <th style="min-width: 140px;" class="bg-danger text-white text-center fw-bold">TOTAL AMOUNT (Rs)</th>
+            `;
+            headerRow.innerHTML = headerHTML;
+
+            // 2. Build Rows
+            let bodyHTML = '';
+            let colTotals = new Array(distributorsList.length).fill(0);
+            let grandTotalUnits = 0;
+            let grandTotalRevenue = 0;
+
+            defaultProducts.forEach((prod, index) => {
+                let rowUnits = 0;
+                let companyBadge = prod.company === 'Allura' ? '<span class="badge-allura">Allura</span>' : '<span class="badge-uniglobe">Uniglobe</span>';
+
+                let rowHTML = `
+                    <tr>
+                        <td class="sticky-col-1 text-center font-monospace">${index + 1}</td>
+                        <td class="sticky-col-2 text-center">${companyBadge}</td>
+                        <td class="sticky-col-3 fw-semibold">${prod.name}</td>
+                        <td class="sticky-col-4 text-end">Rs. ${prod.netRate}</td>
+                `;
+
+                distributorsList.forEach((dist, dIdx) => {
+                    let qty = (ssrMatrixData[prod.id] && ssrMatrixData[prod.id][dist]) ? ssrMatrixData[prod.id][dist] : 0;
+                    rowUnits += qty;
+                    colTotals[dIdx] += qty;
+                    rowHTML += `<td class="text-center ${qty === 0 ? 'text-muted opacity-50' : ''}">${qty}</td>`;
+                });
+
+                let rowAmount = rowUnits * prod.netRate;
+                grandTotalUnits += rowUnits;
+                grandTotalRevenue += rowAmount;
+
+                rowHTML += `
+                    <td class="text-center fw-bold bg-light text-primary">${rowUnits.toLocaleString()}</td>
+                    <td class="text-end fw-bold bg-light text-success">Rs. ${rowAmount.toLocaleString()}</td>
+                    </tr>
+                `;
+                bodyHTML += rowHTML;
+            });
+
+            tbody.innerHTML = bodyHTML;
+
+            // 3. Build Footer Totals
+            let footHTML = `
+                <tr class="total-row">
+                    <td colspan="4" class="text-end fw-bold">DISTRIBUTOR TOTAL UNITS:</td>
+            `;
+
+            colTotals.forEach(tot => {
+                footHTML += `<td class="text-center fw-bold">${tot.toLocaleString()}</td>`;
+            });
+
+            footHTML += `
+                <td class="text-center fw-bold text-dark fs-6">${grandTotalUnits.toLocaleString()}</td>
+                <td class="text-end fw-bold text-danger fs-6">Rs. ${grandTotalRevenue.toLocaleString()}</td>
+                </tr>
+            `;
+            tfoot.innerHTML = footHTML;
+
+            // Update KPI Counters
+            document.getElementById('kpiDistributorCount').innerText = distributorsList.length;
+            document.getElementById('kpiTotalUnits').innerText = grandTotalUnits.toLocaleString();
+            document.getElementById('kpiGrandRevenue').innerText = 'Rs. ' + (grandTotalRevenue / 100000).toFixed(2) + ' Lacs';
+        }
+
+        // ================= DASHBOARD CHARTS =================
+        function updateDashboardCharts() {
+            let alluraRev = 0;
+            let uniglobeRev = 0;
+            let distRevenues = {};
+
+            distributorsList.forEach(dist => distRevenues[dist] = 0);
+
+            defaultProducts.forEach(prod => {
+                let prodUnits = 0;
+                distributorsList.forEach(dist => {
+                    let qty = (ssrMatrixData[prod.id] && ssrMatrixData[prod.id][dist]) ? ssrMatrixData[prod.id][dist] : 0;
+                    prodUnits += qty;
+                    distRevenues[dist] += (qty * prod.netRate);
+                });
+
+                let rev = prodUnits * prod.netRate;
+                if (prod.company === 'Allura') alluraRev += rev;
+                else uniglobeRev += rev;
+            });
+
+            // 1. Share Chart
+            const ctx1 = document.getElementById('chartCompanyShare').getContext('2d');
+            if (chartShareInstance) chartShareInstance.destroy();
+            chartShareInstance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Allura Holdings', 'Uniglobe Marketing'],
+                    datasets: [{
+                        data: [alluraRev, uniglobeRev],
+                        backgroundColor: ['#5C0620', '#0A192F'],
+                        borderColor: ['#D4AF37', '#FFF'],
+                        borderWidth: 2
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // 2. Top Distributors Chart
+            let sortedDist = Object.keys(distRevenues).sort((a,b) => distRevenues[b] - distRevenues[a]).slice(0, 7);
+            let topValues = sortedDist.map(d => distRevenues[d]);
+
+            const ctx2 = document.getElementById('chartTopDistributors').getContext('2d');
+            if (chartBarInstance) chartBarInstance.destroy();
+            chartBarInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: sortedDist.map(d => d.split(' - ')[0]),
+                    datasets: [{
+                        label: 'Total Net Sales (PKR)',
+                        data: topValues,
+                        backgroundColor: '#D4AF37',
+                        borderColor: '#5C0620',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // ================= EXPORT TO EXCEL LOGIC =================
+        function exportMasterExcel() {
+            if (distributorsList.length === 0) {
+                alert('No distributor data loaded to export!');
+                return;
+            }
+
+            let exportData = [];
+
+            defaultProducts.forEach((prod, idx) => {
+                let rowObj = {
+                    'S.No': idx + 1,
+                    'Company': prod.company,
+                    'Product Description': prod.name,
+                    'Net Rate (Rs)': prod.netRate
+                };
+
+                let rowUnits = 0;
+                distributorsList.forEach(dist => {
+                    let qty = (ssrMatrixData[prod.id] && ssrMatrixData[prod.id][dist]) ? ssrMatrixData[prod.id][dist] : 0;
+                    rowObj[dist] = qty;
+                    rowUnits += qty;
+                });
+
+                rowObj['TOTAL QTY'] = rowUnits;
+                rowObj['TOTAL AMOUNT (Rs)'] = rowUnits * prod.netRate;
+                exportData.push(rowObj);
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Master 60+ SSR Consolidation");
+            
+            XLSX.writeFile(workbook, `Uniglobe_Allura_Master_SSR_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        // ================= CATALOG MANAGEMENT =================
+        function loadCatalogFromStorage() {
+            const saved = localStorage.getItem('ua_catalog');
+            if (saved) defaultProducts = JSON.parse(saved);
+        }
+
+        function renderCatalogTable() {
+            const tbody = document.getElementById('catalogTableBody');
+            let html = '';
+            defaultProducts.forEach((p, idx) => {
+                html += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><span class="${p.company === 'Allura' ? 'badge-allura' : 'badge-uniglobe'}">${p.company}</span></td>
+                        <td class="fw-bold">${p.name}</td>
+                        <td>Rs. ${p.tradeRate}</td>
+                        <td>Rs. ${p.netRate}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function deleteProduct(id) {
+            defaultProducts = defaultProducts.filter(p => p.id !== id);
+            localStorage.setItem('ua_catalog', JSON.stringify(defaultProducts));
+            renderCatalogTable();
+            renderMasterMatrix();
+        }
+
+        function filterMatrixTable() {
+            let input = document.getElementById('matrixSearch').value.toLowerCase();
+            let rows = document.querySelectorAll('#matrixTableBody tr');
+            rows.forEach(r => {
+                let text = r.children[2].innerText.toLowerCase();
+                r.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        // File Select Handler (Upload Screen)
+        function handleFileSelect(e) {
+            let files = e.target.files;
+            let list = document.getElementById('uploadFileList');
+            let countSpan = document.getElementById('uploadedCount');
+            
+            countSpan.innerText = files.length;
+            list.innerHTML = '';
+
+            for (let i = 0; i < files.length; i++) {
+                let f = files[i];
+                list.innerHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fa-solid fa-file-pdf text-danger me-2"></i>
+                            <strong>${f.name}</strong> <small class="text-muted">(${(f.size/1024).toFixed(1)} KB)</small>
+                        </div>
+                        <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i> Ready for Consolidation</span>
+                    </li>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+
