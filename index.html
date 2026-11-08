@@ -6,7 +6,7 @@
     <title>Uniglobe Marketing - SSR & Sales Management System</title>
     <!-- Chart.js & SheetJS (XLSX Export) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.min.js"></script>
     <style>
         :root {
             --bg-primary: #0a192f;
@@ -402,7 +402,7 @@
                 <div class="form-group">
                     <label>SELECT ROLE</label>
                     <select id="userRole">
-                        <option value="rsm">Junaid Ali (RSM / Regional Sales Manager)</option>
+                        <option value="nsm">Junaid Ali (NSM / National Sales Manager)</option>
                         <option value="ceo">Awais Ali (CEO)</option>
                         <option value="operator">Shaban (Head Office Operator)</option>
                     </select>
@@ -427,7 +427,7 @@
                 </div>
             </div>
             <div class="user-profile">
-                <span class="role-badge" id="displayUser">Junaid Ali (RSM)</span>
+                <span class="role-badge" id="displayUser">Junaid Ali (NSM)</span>
                 <button class="logout-btn" onclick="logout()">LOGOUT</button>
             </div>
         </header>
@@ -777,9 +777,9 @@
             let isValid = false;
             let displayRole = '';
 
-            if (role === 'rsm' && pass === 'junaid ali') {
+            if (role === 'nsm' && pass === 'junaid ali') {
                 isValid = true;
-                displayRole = 'Junaid Ali (RSM / Regional Sales Manager)';
+                displayRole = 'Junaid Ali (NSM / National Sales Manager)';
             } else if (role === 'ceo' && pass === 'awais ali') {
                 isValid = true;
                 displayRole = 'Awais Ali (CEO)';
