@@ -1,80 +1,167 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uniglobe Marketing & Allura Holdings - Enterprise Portal</title>
+    <title>UNIGLOBE MARKETING (PVT) LTD & ALLURA HOLDINGS - Enterprise Portal</title>
+    <!-- Chart.js & SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- FontAwesome icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0a192f;
             --bg-secondary: #112240;
             --bg-card: #1d2d50;
             --accent-uniglobe: #1e3a8a;
-            --accent-allura: #7c2d12;
+            --accent-allura: #5c0620;
             --gold: #d4af37;
+            --gold-hover: #b89628;
             --text-light: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
-            --success: #16a34a;
-            --warning: #ca8a04;
-            --danger: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-primary); color: var(--text-light); display: flex; flex-direction: column; min-height: 100vh; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-light); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
         /* LOGIN SCREEN */
-        #login-screen { display: flex; justify-content: center; align-items: center; flex-grow: 1; padding: 20px; background: linear-gradient(135deg, #0a192f 0%, #1a0510 100%); }
-        .login-card { background: var(--bg-secondary); border: 2px solid var(--gold); border-radius: 12px; padding: 40px 30px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
-        .login-card h2 { color: var(--gold); margin-bottom: 8px; font-size: 24px; }
-        .login-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+        #login-screen {
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: radial-gradient(circle at center, #112240 0%, #0a192f 100%);
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--bg-secondary); border: 2px solid var(--gold); border-radius: 16px;
+            padding: 40px; width: 100%; max-width: 440px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .login-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--accent-uniglobe), var(--gold), var(--accent-allura));
+        }
+        .login-card h2 { color: var(--gold); font-size: 22px; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
+        .login-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 25px; }
         .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 8px; color: var(--text-light); font-size: 13px; font-weight: 600; }
-        .form-group input, .form-group select { width: 100%; padding: 12px 14px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 14px; outline: none; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
-        .btn { width: 100%; padding: 12px; background: linear-gradient(90deg, #1e3a8a 0%, #7c2d12 100%); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 15px; transition: 0.3s; }
-        .btn:hover { opacity: 0.9; }
-        .error-msg { color: #ef4444; font-size: 13px; margin-top: 15px; display: none; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-light); font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px 14px; background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 8px; color: #fff; font-size: 14px; outline: none; transition: 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
+        
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 20px; background: linear-gradient(90deg, #1e3a8a 0%, #7c2d12 100%);
+            border: 1px solid var(--gold); color: #fff; font-weight: 700; border-radius: 8px;
+            cursor: pointer; font-size: 14px; transition: all 0.2s; width: 100%;
+        }
+        .btn:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
+        .btn-gold { background: var(--gold); color: #000; border: none; }
+        .btn-gold:hover { background: var(--gold-hover); color: #000; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; }
+        .btn-danger { background: var(--danger); border: none; }
+
+        .error-msg { color: var(--danger); font-size: 13px; margin-top: 15px; display: none; background: rgba(239,68,68,0.1); padding: 8px; border-radius: 6px; }
 
         /* MAIN APP */
         #app-interface { display: none; flex-direction: column; min-height: 100vh; }
-        header { background: var(--bg-secondary); border-bottom: 2px solid var(--gold); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .brand-title h1 { font-size: 18px; color: var(--gold); }
-        .brand-title span { font-size: 12px; color: var(--text-muted); }
-        .user-profile { display: flex; align-items: center; gap: 15px; }
-        .role-badge { background: var(--accent-uniglobe); border: 1px solid var(--gold); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .logout-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-
+        header {
+            background: var(--bg-secondary); border-bottom: 2px solid var(--gold); padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .brand-title { display: flex; align-items: center; gap: 15px; }
+        .brand-logo-icon {
+            width: 42px; h-42px; background: linear-gradient(135deg, var(--accent-uniglobe), var(--accent-allura));
+            border: 1.5px solid var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: var(--gold); font-size: 20px; font-weight: bold;
+        }
+        .brand-title h1 { font-size: 18px; color: var(--gold); font-weight: 700; }
+        .brand-title span { font-size: 12px; color: var(--text-muted); display: block; }
+        
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .role-badge { background: var(--accent-uniglobe); border: 1px solid var(--gold); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        
         nav { background: #06101e; display: flex; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
-        nav button { background: transparent; border: none; color: var(--text-muted); padding: 14px 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; }
+        nav button {
+            background: transparent; border: none; color: var(--text-muted); padding: 14px 22px; font-size: 13px;
+            font-weight: 600; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; transition: 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
         nav button.active { color: var(--gold); border-bottom-color: var(--gold); background: var(--bg-secondary); }
 
-        main { flex-grow: 1; padding: 25px; max-width: 1400px; width: 100%; margin: 0 auto; }
+        main { flex-grow: 1; padding: 25px; max-width: 1450px; width: 100%; margin: 0 auto; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .kpi-card { background: var(--bg-secondary); border-left: 4px solid var(--gold); border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .kpi-title { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
-        .kpi-value { font-size: 22px; font-weight: bold; color: #fff; }
+        /* DASHBOARD CARDS & WIDGETS */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .kpi-card {
+            background: var(--bg-secondary); border-left: 4px solid var(--gold); border-radius: 12px;
+            padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+        }
+        .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px; }
+        .kpi-value { font-size: 24px; font-weight: 800; color: #fff; }
+        .kpi-sub { font-size: 12px; margin-top: 6px; color: var(--text-muted); }
 
-        .card-panel { background: var(--bg-secondary); border-radius: 10px; border: 1px solid var(--border-color); padding: 20px; margin-bottom: 25px; }
+        .card-panel {
+            background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);
+            padding: 22px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .panel-header h3 { color: var(--gold); font-size: 17px; }
+        .panel-header h3 { color: var(--gold); font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-        th { background: var(--bg-primary); color: var(--gold); padding: 12px; border-bottom: 2px solid var(--border-color); white-space: nowrap; }
-        td { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-light); }
-        tr:hover { background: rgba(255,255,255,0.03); }
+        th { background: var(--bg-primary); color: var(--gold); padding: 12px 14px; border-bottom: 2px solid var(--border-color); white-space: nowrap; font-weight: 600; }
+        td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); color: var(--text-light); }
+        tr:hover { background: rgba(255,255,255,0.02); }
+
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-block; }
+        .badge-uniglobe { background: #2563eb; color: #fff; }
+        .badge-allura { background: #dc2626; color: #fff; }
+        .badge-success { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid var(--success); }
+        .badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid var(--warning); }
+        .badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid var(--danger); }
+
+        /* UPLOAD DRAG-DROP BOX */
+        .dropzone {
+            border: 2px dashed var(--gold); border-radius: 12px; padding: 30px; text-align: center;
+            background: rgba(212,175,55,0.02); cursor: pointer; transition: 0.2s; margin-bottom: 20px;
+        }
+        .dropzone:hover { background: rgba(212,175,55,0.06); }
+        .dropzone i { font-size: 36px; color: var(--gold); margin-bottom: 10px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .badge-uniglobe { background: #2563eb; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .badge-allura { background: #dc2626; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
-        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 15px; text-align: center; font-size: 13px; color: var(--text-muted); margin-top: auto; }
+        /* FOOTER */
+        footer {
+            background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 15px 30px;
+            text-align: center; font-size: 13px; color: var(--text-muted); margin-top: auto;
+        }
         footer strong { color: var(--gold); }
+
+        /* MODAL */
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary); border: 2px solid var(--gold); border-radius: 14px;
+            width: 100%; max-width: 550px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
@@ -86,11 +173,11 @@
             <p>(PVT) LTD & ALLURA HOLDINGS</p>
             <form onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>USER ID</label>
-                    <input type="text" value="uniglobe" readonly style="background:#1a2942;">
+                    <label>User ID</label>
+                    <input type="text" id="userId" value="uniglobe" readonly style="background:#1a2942;">
                 </div>
                 <div class="form-group">
-                    <label>SELECT ROLE</label>
+                    <label>Select Role</label>
                     <select id="userRole">
                         <option value="nsm">Junaid Ali (NSM / National Sales Manager)</option>
                         <option value="ceo">Awais Ali (CEO)</option>
@@ -98,11 +185,11 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>PASSWORD</label>
+                    <label>Password</label>
                     <input type="password" id="password" placeholder="Enter password" required>
                 </div>
-                <button type="submit" class="btn">LOGIN TO SYSTEM</button>
-                <div id="errorMsg" class="error-msg">Invalid password. Try again.</div>
+                <button type="submit" class="btn"><i class="fa-solid fa-lock"></i> LOGIN TO SYSTEM</button>
+                <div id="errorMsg" class="error-msg">Invalid password. Please try again.</div>
             </form>
         </div>
     </div>
@@ -111,170 +198,389 @@
     <div id="app-interface">
         <header>
             <div class="brand-title">
-                <h1>UNIGLOBE MARKETING & ALLURA</h1>
-                <span>Enterprise Management Portal</span>
+                <div class="brand-logo-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div>
+                    <h1>UNIGLOBE MARKETING & ALLURA HOLDINGS</h1>
+                    <span>Corporate Operational Sales & SSR Management Portal</span>
+                </div>
             </div>
             <div class="user-profile">
                 <span class="role-badge" id="displayUser">Junaid Ali (NSM)</span>
-                <button class="logout-btn" onclick="logout()">LOGOUT</button>
+                <button class="btn btn-sm btn-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
             </div>
         </header>
 
         <nav>
-            <button class="active" onclick="switchTab('dashboard')">Dashboard</button>
-            <button onclick="switchTab('sales')">Oct Sales Tracker</button>
-            <button onclick="switchTab('ssr-engine')">SSR & Invoice Auto-Update</button>
-            <button onclick="switchTab('admin-config')">Admin Management</button>
+            <button class="active" onclick="switchTab('dashboard')"><i class="fa-solid fa-gauge"></i> Executive Dashboard</button>
+            <button onclick="switchTab('sales-tracker')"><i class="fa-solid fa-table"></i> Sales Tracker</button>
+            <button onclick="switchTab('ssr-uploader')"><i class="fa-solid fa-file-arrow-up"></i> SSR File Reader & Upload</button>
+            <button onclick="switchTab('product-analytics')"><i class="fa-solid fa-chart-pie"></i> Fast/Slow Product Analytics</button>
+            <button onclick="switchTab('admin-config')"><i class="fa-solid fa-sliders"></i> Admin Master Control</button>
         </nav>
 
         <main>
-            <!-- TAB 1: DASHBOARD -->
+            <!-- TAB 1: EXECUTIVE DASHBOARD -->
             <div id="tab-dashboard" class="tab-content active">
                 <div class="kpi-grid">
                     <div class="kpi-card">
-                        <div class="kpi-title">National Target (Oct)</div>
-                        <div class="kpi-value">PKR 11.15 M</div>
+                        <div class="kpi-title">Selected Month Target</div>
+                        <div class="kpi-value" id="dashTarget">PKR 11.15 M</div>
+                        <div class="kpi-sub"><i class="fa-solid fa-calendar"></i> <span id="dashMonthLabel">October 2026</span></div>
                     </div>
-                    <div class="kpi-card" style="border-left-color: #16a34a">
-                        <div class="kpi-title">Achieved Sales</div>
-                        <div class="kpi-value" style="color:#4ade80">PKR 5.14 M (46.1%)</div>
+                    <div class="kpi-card" style="border-left-color: var(--success);">
+                        <div class="kpi-title">Total Sales Achieved</div>
+                        <div class="kpi-value" style="color:var(--success)" id="dashAchieved">PKR 5.14 M</div>
+                        <div class="kpi-sub"><span id="dashAchPct" class="badge badge-success">46.1% Achievement</span></div>
                     </div>
-                    <div class="kpi-card" style="border-left-color: #dc2626">
-                        <div class="kpi-title">Uniglobe / Allura Split</div>
-                        <div class="kpi-value" style="font-size:17px">2.98M / 2.16M</div>
+                    <div class="kpi-card" style="border-left-color: var(--accent-allura);">
+                        <div class="kpi-title">Uniglobe vs Allura Split</div>
+                        <div class="kpi-value" style="font-size:18px" id="dashSplit">2.98M / 2.16M</div>
+                        <div class="kpi-sub"><span class="badge badge-uniglobe">58% Uniglobe</span> <span class="badge badge-allura">42% Allura</span></div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: var(--warning);">
+                        <div class="kpi-title">Stock Shortage Alerts</div>
+                        <div class="kpi-value" style="color:var(--warning)" id="dashAlertCount">3 Distributors</div>
+                        <div class="kpi-sub">Reorder required soon</div>
                     </div>
                 </div>
+
                 <div class="card-panel">
-                    <div class="panel-header"><h3>Regional Performance Breakdown</h3></div>
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-chart-column"></i> Regional Target vs Achievement Breakdown</h3>
+                        <div style="display:flex; gap:10px;">
+                            <select id="dashMonthSelect" onchange="updateDashboardView()" style="background:var(--bg-primary); color:#fff; border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; font-size:12px;">
+                                <option value="Oct 2026">Oct 2026</option>
+                                <option value="Nov 2026">Nov 2026</option>
+                                <option value="Dec 2026">Dec 2026</option>
+                            </select>
+                            <button class="btn btn-sm btn-gold" onclick="exportTableToExcel('regionalTable', 'Regional_Sales_Summary')"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                        </div>
+                    </div>
+                    <div style="height: 260px; margin-bottom:20px;">
+                        <canvas id="regionalChart"></canvas>
+                    </div>
                     <div class="table-responsive">
-                        <table>
+                        <table id="regionalTable">
                             <thead>
-                                <tr><th>Region</th><th>Target</th><th>Uniglobe Sale</th><th>Allura Sale</th><th>Total Achieved</th><th>Ach %</th></tr>
+                                <tr>
+                                    <th>Region</th>
+                                    <th>Target (PKR)</th>
+                                    <th>Uniglobe Sale</th>
+                                    <th>Allura Sale</th>
+                                    <th>Total Achieved</th>
+                                    <th>Achievement %</th>
+                                    <th>Pending Target</th>
+                                    <th>Status</th>
+                                </tr>
                             </thead>
-                            <tbody>
-                                <tr><td><strong>North Punjab</strong></td><td>6,000,000</td><td>2,123,255</td><td>1,435,481</td><td style="color:#4ade80">3,558,736</td><td>59.3%</td></tr>
-                                <tr><td><strong>Faisalabad</strong></td><td>650,000</td><td>225,190</td><td>179,910</td><td style="color:#4ade80">405,100</td><td>62.3%</td></tr>
-                                <tr><td><strong>Lahore</strong></td><td>1,000,000</td><td>263,100</td><td>81,345</td><td style="color:#4ade80">344,445</td><td>34.4%</td></tr>
-                                <tr><td><strong>South Punjab</strong></td><td>3,500,000</td><td>365,245</td><td>464,399</td><td style="color:#4ade80">829,644</td><td>23.7%</td></tr>
-                            </tbody>
+                            <tbody id="regionalTableBody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
             <!-- TAB 2: SALES TRACKER -->
-            <div id="tab-sales" class="tab-content">
+            <div id="tab-sales-tracker" class="tab-content">
                 <div class="card-panel">
-                    <div class="panel-header"><h3>Sales Officers & ASMs Performance Grid</h3></div>
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-users"></i> Sales Officers (SOs & ASMs) Performance Grid</h3>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <input type="text" id="soSearch" placeholder="Search SO, Area or Region..." onkeyup="filterSOTable()" style="background:var(--bg-primary); border:1px solid var(--border-color); color:#fff; padding:6px 12px; border-radius:6px; font-size:12px; width:220px;">
+                            <button class="btn btn-sm btn-gold" onclick="exportTableToExcel('soTable', 'Sales_Officers_Report')"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                        </div>
+                    </div>
                     <div class="table-responsive">
-                        <table>
+                        <table id="soTable">
                             <thead>
-                                <tr><th>Sr</th><th>Region</th><th>Sales Officer / ASM</th><th>Area</th><th>Target</th><th>Total Achieved</th><th>Ach %</th></tr>
+                                <tr>
+                                    <th>Sr</th>
+                                    <th>Region</th>
+                                    <th>Sales Officer / ASM</th>
+                                    <th>Area / Territory</th>
+                                    <th>Monthly Target</th>
+                                    <th>Uniglobe Sale</th>
+                                    <th>Allura Sale</th>
+                                    <th>Total Achieved</th>
+                                    <th>Ach %</th>
+                                    <th>Performance</th>
+                                </tr>
                             </thead>
-                            <tbody id="soTableBody">
-                                <tr><td>1</td><td>North Punjab</td><td><strong>Sher Rehman</strong></td><td>RWP</td><td>350,000</td><td>287,640</td><td>82.2%</td></tr>
-                                <tr><td>2</td><td>North Punjab</td><td><strong>M. Awais</strong></td><td>RWP</td><td>400,000</td><td>503,140</td><td>125.8%</td></tr>
-                                <tr><td>3</td><td>Faisalabad</td><td><strong>Mubashir (ASM)</strong></td><td>FSBD</td><td>400,000</td><td>307,725</td><td>76.9%</td></tr>
-                                <tr><td>4</td><td>Lahore</td><td><strong>Tahir (ASM)</strong></td><td>LHR</td><td>250,000</td><td>103,000</td><td>41.2%</td></tr>
-                            </tbody>
+                            <tbody id="soTableBody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 3: SSR & INVOICE AUTO-UPDATE ENGINE -->
-            <div id="tab-ssr-engine" class="tab-content">
+            <!-- TAB 3: SSR FILE READER & AUTO-UPDATE ENGINE -->
+            <div id="tab-ssr-uploader" class="tab-content">
                 <div class="card-panel">
-                    <div class="panel-header"><h3>Smart Invoice & Closing SSR Stock Auto-Update</h3></div>
-                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">
-                        Enter new closing dispatch invoices. The system will automatically calculate closing stock and update active inventory balance for the distributor.
-                    </p>
-                    <form onsubmit="handleInvoiceSubmit(event)">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-file-import"></i> Automated SSR & Invoice File Reader</h3>
+                    </div>
+                    <div class="dropzone" onclick="document.getElementById('fileInput').click()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <h4 style="color:var(--gold); font-size:16px;">Click or Drag & Drop SSR File / Dispatch Invoice</h4>
+                        <p style="color:var(--text-muted); font-size:12px; margin-top:4px;">Supports Excel (.xlsx, .csv) and Raw SSR Text Files</p>
+                        <input type="file" id="fileInput" accept=".xlsx,.csv,.txt" style="display:none;" onchange="handleFileUpload(event)">
+                    </div>
+
+                    <h4 style="color:var(--gold); font-size:14px; margin-bottom:12px;">Manual Correction & Entry Verification:</h4>
+                    <form onsubmit="saveSSREntry(event)">
                         <div class="form-grid">
                             <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="ssrDate" required>
+                            </div>
+                            <div class="form-group">
                                 <label>Distributor Name</label>
-                                <select id="invDist" required>
-                                    <option value="Hilal Heaven - Rawalpindi">Hilal Heaven - Rawalpindi</option>
-                                    <option value="Medipro - Chakwal">Medipro - Chakwal</option>
-                                    <option value="UTL - Talagang">UTL - Talagang</option>
+                                <select id="ssrDistributor" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Product Group</label>
+                                <select id="ssrGroup" required>
+                                    <option value="Uniglobe">Uniglobe</option>
+                                    <option value="Allura Holdings">Allura Holdings</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Product Name</label>
-                                <input type="text" id="invProd" placeholder="e.g. Liquet / Omnimax" required>
+                                <select id="ssrProduct" onchange="autoFillNetRate()" required></select>
                             </div>
                             <div class="form-group">
-                                <label>Previous Closing Stock</label>
-                                <input type="number" id="invPrev" value="50" required>
+                                <label>Opening Stock (Packs)</label>
+                                <input type="number" id="ssrOpening" value="0" oninput="calcSSR()" required>
                             </div>
                             <div class="form-group">
-                                <label>New Invoice / Dispatch Qty</label>
-                                <input type="number" id="invNew" value="100" required>
+                                <label>Received / New Invoice Qty</label>
+                                <input type="number" id="ssrReceived" value="0" oninput="calcSSR()" required>
                             </div>
                             <div class="form-group">
-                                <label>Sold Qty</label>
-                                <input type="number" id="invSold" value="70" required>
+                                <label>Sales Qty (Units Sold)</label>
+                                <input type="number" id="ssrSales" value="0" oninput="calcSSR()" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Net Rate (PKR)</label>
+                                <input type="number" id="ssrRate" value="0" oninput="calcSSR()" required>
                             </div>
                         </div>
-                        <button type="submit" class="btn" style="width:auto; padding:10px 25px;">PROCESS & UPDATE STOCK</button>
+
+                        <div style="background:var(--bg-primary); padding:15px; border-radius:8px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                            <div>
+                                <span style="font-size:11px; color:var(--text-muted)">Calculated Closing Stock:</span>
+                                <h4 id="calcClosing" style="color:var(--gold); font-size:18px;">0 Packs</h4>
+                            </div>
+                            <div>
+                                <span style="font-size:11px; color:var(--text-muted)">Calculated Sales Value:</span>
+                                <h4 id="calcTotal" style="color:var(--success); font-size:18px;">PKR 0</h4>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn" style="width:auto;"><i class="fa-solid fa-floppy-disk"></i> Save SSR Entry & Update Live Stock</button>
                     </form>
                 </div>
 
                 <div class="card-panel">
-                    <div class="panel-header"><h3>Updated Live Stock Balances</h3></div>
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-boxes-stacked"></i> Saved Distributor Stock Ledger</h3>
+                        <button class="btn btn-sm btn-gold" onclick="exportTableToExcel('ssrLogTable', 'Distributor_SSR_Ledger')"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                    </div>
                     <div class="table-responsive">
-                        <table>
+                        <table id="ssrLogTable">
                             <thead>
-                                <tr><th>Distributor</th><th>Product</th><th>Prev Stock</th><th>New Dispatch</th><th>Sold Qty</th><th>Updated Closing Stock</th></tr>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Distributor</th>
+                                    <th>Group</th>
+                                    <th>Product</th>
+                                    <th>Opening</th>
+                                    <th>Received</th>
+                                    <th>Sales Qty</th>
+                                    <th>Closing Stock</th>
+                                    <th>Net Rate</th>
+                                    <th>Total Value</th>
+                                </tr>
                             </thead>
-                            <tbody id="stockLogBody">
-                                <tr><td>Hilal Heaven - Rawalpindi</td><td>Liquet Oral Shots</td><td>50</td><td>100</td><td>70</td><td style="color:#4ade80"><strong>80 Packs</strong></td></tr>
-                            </tbody>
+                            <tbody id="ssrLogBody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: ADMIN MANAGEMENT -->
+            <!-- TAB 4: PRODUCT MOVEMENT & ANALYTICS -->
+            <div id="tab-product-analytics" class="tab-content">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-fire"></i> Fast Moving vs Slow Moving Products Tracker</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Group</th>
+                                    <th>Net Rate</th>
+                                    <th>Total Sales Qty</th>
+                                    <th>Total Revenue (PKR)</th>
+                                    <th>Movement Velocity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productAnalyticsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: ADMIN MASTER CONTROL -->
             <div id="tab-admin-config" class="tab-content">
                 <div class="card-panel">
-                    <div class="panel-header"><h3>Admin Panel: Products, Net Rates & Targets Management</h3></div>
-                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">
-                        Manage master product catalog, net rates, and pricing rules across Uniglobe and Allura groups.
-                    </p>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Product Name</label><input type="text" id="admProd" placeholder="Product name"></div>
-                        <div class="form-group"><label>Group</label><select id="admGroup"><option>Uniglobe</option><option>Allura Holdings</option></select></div>
-                        <div class="form-group"><label>Retail Price (PKR)</label><input type="number" id="admRetail" placeholder="e.g. 350"></div>
-                        <div class="form-group"><label>Net Rate (PKR)</label><input type="number" id="admNet" placeholder="e.g. 220"></div>
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-boxes-packing"></i> Products Catalog & Pricing Manager</h3>
+                        <button class="btn btn-sm btn-gold" onclick="openAddProductModal()"><i class="fa-solid fa-plus"></i> Add New Product</button>
                     </div>
-                    <button class="btn" style="width:auto; padding:10px 25px;" onclick="alert('Master Product & Rate Saved Successfully!')">SAVE PRODUCT & RATE</button>
+                    <div class="table-responsive">
+                        <table id="adminProductTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product Name</th>
+                                    <th>Group</th>
+                                    <th>Retail Price (PKR)</th>
+                                    <th>Net Rate (PKR)</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-bullseye"></i> Monthly Target Manager (Oct / Nov / Dec)</h3>
+                    </div>
+                    <form onsubmit="saveTargetUpdate(event)" class="form-grid">
+                        <div class="form-group">
+                            <label>Select SO / ASM</label>
+                            <select id="targetSO" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Month</label>
+                            <select id="targetMonth">
+                                <option value="Oct 2026">Oct 2026</option>
+                                <option value="Nov 2026">Nov 2026</option>
+                                <option value="Dec 2026">Dec 2026</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>New Target Amount (PKR)</label>
+                            <input type="number" id="targetAmount" required>
+                        </div>
+                        <div style="display:flex; align-items:flex-end; margin-bottom:20px;">
+                            <button type="submit" class="btn"><i class="fa-solid fa-pen-to-square"></i> Update Target</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-database"></i> Database Backup & System Sync</h3>
+                    </div>
+                    <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                        <button class="btn btn-gold" style="width:auto;" onclick="exportDatabase()"><i class="fa-solid fa-download"></i> Export System Backup (JSON)</button>
+                        <button class="btn" style="width:auto;" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Restore Backup (JSON)</button>
+                        <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importDatabase(event)">
+                    </div>
                 </div>
             </div>
         </main>
 
         <footer>
-            Powered by <strong>JhonMediaTech</strong> | Corporate Operational Sales & SSR System
+            Powered by <strong>JhonMediaTech</strong> | Enterprise Operational Sales & SSR Portal
         </footer>
     </div>
 
+    <!-- MODAL FOR ADD PRODUCT -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <h3 style="color:var(--gold); margin-bottom:15px;">Add New Product</h3>
+            <form onsubmit="saveNewProduct(event)">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="newProdName" required>
+                </div>
+                <div class="form-group">
+                    <label>Group</label>
+                    <select id="newProdGroup">
+                        <option value="Uniglobe">Uniglobe</option>
+                        <option value="Allura Holdings">Allura Holdings</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Retail Price (PKR)</label>
+                    <input type="number" id="newProdRetail" required>
+                </div>
+                <div class="form-group">
+                    <label>Net Rate (PKR)</label>
+                    <input type="number" id="newProdNet" required>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="submit" class="btn">Save Product</button>
+                    <button type="button" class="btn btn-danger" onclick="closeProductModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // MASTER SYSTEM DATABASE
+        let db = JSON.parse(localStorage.getItem('uniglobe_master_db')) || {
+            products: [
+                { id: 101, name: "Liquet Oral Shots", group: "Uniglobe", retail: 350, net: 210 },
+                { id: 102, name: "Omnimax Syrup", group: "Uniglobe", retail: 280, net: 170 },
+                { id: 103, name: "Allura Vitamin C 1000mg", group: "Allura Holdings", retail: 450, net: 270 },
+                { id: 104, name: "Allura Iron Complex", group: "Allura Holdings", retail: 520, net: 310 }
+            ],
+            distributors: [
+                { id: 1, name: "Hilal Heaven", city: "Rawalpindi", so: "Sher Rehman" },
+                { id: 2, name: "Medipro Distributor", city: "Chakwal", so: "M. Awais" },
+                { id: 3, name: "UTL Distributor", city: "Talagang", so: "Ameer Ullah" },
+                { id: 4, name: "Khanwaiz Agency", city: "Abbottabad", so: "Mubashir" },
+                { id: 5, name: "Friends Medicine", city: "Peshawar", so: "Hamid Ali" }
+            ],
+            salesOfficers: [
+                { id: 1, name: "Sher Rehman", area: "RWP", region: "North Punjab", targets: { "Oct 2026": 350000, "Nov 2026": 400000, "Dec 2026": 450000 }, uniglobe: 169530, allura: 118110 },
+                { id: 2, name: "M. Awais", area: "RWP", region: "North Punjab", targets: { "Oct 2026": 400000, "Nov 2026": 450000, "Dec 2026": 500000 }, uniglobe: 313910, allura: 189230 },
+                { id: 3, name: "Ameer Ullah", area: "Timergara", region: "North Punjab", targets: { "Oct 2026": 300000, "Nov 2026": 350000, "Dec 2026": 400000 }, uniglobe: 128935, allura: 87465 },
+                { id: 4, name: "Mubashir (ASM)", area: "FSBD", region: "Faisalabad", targets: { "Oct 2026": 400000, "Nov 2026": 450000, "Dec 2026": 500000 }, uniglobe: 161970, allura: 145755 },
+                { id: 5, name: "Tahir (ASM)", area: "LHR", region: "Lahore", targets: { "Oct 2026": 250000, "Nov 2026": 300000, "Dec 2026": 350000 }, uniglobe: 60000, allura: 43000 }
+            ],
+            ssrLogs: [
+                { date: "2026-11-05", dist: "Hilal Heaven", group: "Uniglobe", prod: "Liquet Oral Shots", open: 50, rec: 100, sales: 80, closing: 70, rate: 210, total: 16800 }
+            ]
+        };
+
+        function saveDB() {
+            localStorage.setItem('uniglobe_master_db', JSON.stringify(db));
+        }
+
+        // LOGIN SYSTEM
         function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('userRole').value;
             const pass = document.getElementById('password').value.toLowerCase().trim();
             const err = document.getElementById('errorMsg');
-            let isValid = false, name = "";
+            let isValid = false, display = "";
 
-            if (role === 'nsm' && pass === 'junaid ali') { isValid = true; name = "Junaid Ali (NSM)"; }
-            else if (role === 'ceo' && pass === 'awais ali') { isValid = true; name = "Awais Ali (CEO)"; }
-            else if (role === 'operator' && pass === 'shaban') { isValid = true; name = "Shaban (Operator)"; }
+            if (role === 'nsm' && pass === 'junaid ali') { isValid = true; display = "Junaid Ali (NSM)"; }
+            else if (role === 'ceo' && pass === 'awais ali') { isValid = true; display = "Awais Ali (CEO)"; }
+            else if (role === 'operator' && pass === 'shaban') { isValid = true; display = "Shaban (Operator)"; }
 
             if (isValid) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-interface').style.display = 'flex';
-                document.getElementById('displayUser').innerText = name;
+                document.getElementById('displayUser').innerText = display;
                 err.style.display = 'none';
+                initApp();
             } else { err.style.display = 'block'; }
         }
 
@@ -284,26 +590,305 @@
             document.getElementById('password').value = '';
         }
 
-        function switchTab(id) {
+        function switchTab(tabId) {
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('tab-' + id).classList.add('active');
+            event.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
         }
 
-        function handleInvoiceSubmit(e) {
-            e.preventDefault();
-            const dist = document.getElementById('invDist').value;
-            const prod = document.getElementById('invProd').value;
-            const prev = parseInt(document.getElementById('invPrev').value) || 0;
-            const newQty = parseInt(document.getElementById('invNew').value) || 0;
-            const sold = parseInt(document.getElementById('invSold').value) || 0;
-            const closing = prev + newQty - sold;
+        // INITIALIZE APP DATA
+        function initApp() {
+            populateDropdowns();
+            renderDashboard();
+            renderSOTable();
+            renderSSRLogs();
+            renderProductAnalytics();
+            renderAdminProducts();
+            document.getElementById('ssrDate').valueAsDate = new Date();
+        }
 
-            const tbody = document.getElementById('stockLogBody');
-            tbody.innerHTML += `<tr><td>${dist}</td><td>${prod}</td><td>${prev}</td><td>${newQty}</td><td>${sold}</td><td style="color:#4ade80"><strong>${closing} Packs</strong></td></tr>`;
-            alert('Invoice processed & distributor stock updated successfully!');
+        function populateDropdowns() {
+            const distSelect = document.getElementById('ssrDistributor');
+            distSelect.innerHTML = db.distributors.map(d => `<option value="${d.name}">${d.name} (${d.city})</option>`).join('');
+
+            const prodSelect = document.getElementById('ssrProduct');
+            prodSelect.innerHTML = db.products.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+
+            const soSelect = document.getElementById('targetSO');
+            soSelect.innerHTML = db.salesOfficers.map(s => `<option value="${s.id}">${s.name} (${s.area})</option>`).join('');
+
+            autoFillNetRate();
+        }
+
+        function autoFillNetRate() {
+            const prodName = document.getElementById('ssrProduct').value;
+            const prod = db.products.find(p => p.name === prodName);
+            if(prod) {
+                document.getElementById('ssrRate').value = prod.net;
+                document.getElementById('ssrGroup').value = prod.group;
+                calcSSR();
+            }
+        }
+
+        // SSR CALCULATOR
+        function calcSSR() {
+            const open = parseFloat(document.getElementById('ssrOpening').value) || 0;
+            const rec = parseFloat(document.getElementById('ssrReceived').value) || 0;
+            const sales = parseFloat(document.getElementById('ssrSales').value) || 0;
+            const rate = parseFloat(document.getElementById('ssrRate').value) || 0;
+
+            const closing = Math.max(0, open + rec - sales);
+            const total = sales * rate;
+
+            document.getElementById('calcClosing').innerText = closing + ' Packs';
+            document.getElementById('calcTotal').innerText = 'PKR ' + total.toLocaleString();
+        }
+
+        function saveSSREntry(e) {
+            e.preventDefault();
+            const date = document.getElementById('ssrDate').value;
+            const dist = document.getElementById('ssrDistributor').value;
+            const group = document.getElementById('ssrGroup').value;
+            const prod = document.getElementById('ssrProduct').value;
+            const open = parseFloat(document.getElementById('ssrOpening').value) || 0;
+            const rec = parseFloat(document.getElementById('ssrReceived').value) || 0;
+            const sales = parseFloat(document.getElementById('ssrSales').value) || 0;
+            const rate = parseFloat(document.getElementById('ssrRate').value) || 0;
+
+            const closing = Math.max(0, open + rec - sales);
+            const total = sales * rate;
+
+            db.ssrLogs.unshift({ date, dist, group, prod, open, rec, sales, closing, rate, total });
+            saveDB();
+            renderSSRLogs();
+            renderProductAnalytics();
+            alert("SSR Record Saved & Stock Updated Successfully!");
+        }
+
+        function renderSSRLogs() {
+            const tbody = document.getElementById('ssrLogBody');
+            tbody.innerHTML = db.ssrLogs.map(l => `
+                <tr>
+                    <td>${l.date}</td>
+                    <td><strong>${l.dist}</strong></td>
+                    <td><span class="badge ${l.group === 'Uniglobe' ? 'badge-uniglobe' : 'badge-allura'}">${l.group}</span></td>
+                    <td>${l.prod}</td>
+                    <td>${l.open}</td>
+                    <td>${l.rec}</td>
+                    <td>${l.sales}</td>
+                    <td><strong>${l.closing}</strong></td>
+                    <td>${l.rate}</td>
+                    <td style="color:var(--success)"><strong>PKR ${l.total.toLocaleString()}</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        // FILE READER ENGINE
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.SheetNames[0];
+                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+                    
+                    if(rows.length > 0) {
+                        const r = rows[0];
+                        if(r.Opening) document.getElementById('ssrOpening').value = r.Opening;
+                        if(r.Received) document.getElementById('ssrReceived').value = r.Received;
+                        if(r.Sales) document.getElementById('ssrSales').value = r.Sales;
+                        if(r.Rate) document.getElementById('ssrRate').value = r.Rate;
+                        calcSSR();
+                        alert("File Data Extracted Successfully into Form!");
+                    }
+                } catch(err) { alert("Error reading file! Please check file format."); }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // DASHBOARD & CHARTS
+        let chartInstance = null;
+        function renderDashboard() {
+            const selectedMonth = document.getElementById('dashMonthSelect').value;
+            document.getElementById('dashMonthLabel').innerText = selectedMonth;
+
+            const tbody = document.getElementById('regionalTableBody');
+            const regions = ["North Punjab", "Faisalabad", "Lahore", "South Punjab"];
+            
+            tbody.innerHTML = regions.map(r => `
+                <tr>
+                    <td><strong>${r}</strong></td>
+                    <td>PKR 4,000,000</td>
+                    <td>PKR 1,800,000</td>
+                    <td>PKR 1,200,000</td>
+                    <td style="color:var(--success)"><strong>PKR 3,000,000</strong></td>
+                    <td>75.0%</td>
+                    <td>PKR 1,000,000</td>
+                    <td><span class="badge badge-success">On Track</span></td>
+                </tr>
+            `).join('');
+
+            const ctx = document.getElementById('regionalChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: regions,
+                    datasets: [
+                        { label: 'Target', data: [6000000, 650000, 1000000, 3500000], backgroundColor: '#334155' },
+                        { label: 'Achieved', data: [3558736, 405100, 344445, 829644], backgroundColor: '#10b981' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function updateDashboardView() { renderDashboard(); }
+
+        // SO TRACKER
+        function renderSOTable() {
+            const tbody = document.getElementById('soTableBody');
+            tbody.innerHTML = db.salesOfficers.map((so, idx) => {
+                const total = so.uniglobe + so.allura;
+                const target = so.targets["Oct 2026"] || 300000;
+                const pct = ((total / target) * 100).toFixed(1);
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${so.region}</td>
+                        <td><strong>${so.name}</strong></td>
+                        <td>${so.area}</td>
+                        <td>PKR ${target.toLocaleString()}</td>
+                        <td>PKR ${so.uniglobe.toLocaleString()}</td>
+                        <td>PKR ${so.allura.toLocaleString()}</td>
+                        <td style="color:var(--success)"><strong>PKR ${total.toLocaleString()}</strong></td>
+                        <td>${pct}%</td>
+                        <td><span class="badge ${pct >= 70 ? 'badge-success' : 'badge-warning'}">${pct >= 70 ? 'High Achiever' : 'Average'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterSOTable() {
+            const q = document.getElementById('soSearch').value.toLowerCase();
+            document.querySelectorAll('#soTableBody tr').forEach(r => {
+                r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        // PRODUCT ANALYTICS
+        function renderProductAnalytics() {
+            const tbody = document.getElementById('productAnalyticsBody');
+            tbody.innerHTML = db.products.map(p => {
+                const logs = db.ssrLogs.filter(l => l.prod === p.name);
+                const totalQty = logs.reduce((acc, curr) => acc + curr.sales, 0);
+                const totalRev = totalQty * p.net;
+                const velocity = totalQty > 50 ? 'Fast Moving' : (totalQty > 10 ? 'Moderate' : 'Slow Moving');
+                const badgeClass = totalQty > 50 ? 'badge-success' : (totalQty > 10 ? 'badge-warning' : 'badge-danger');
+
+                return `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td><span class="badge ${p.group === 'Uniglobe' ? 'badge-uniglobe' : 'badge-allura'}">${p.group}</span></td>
+                        <td>PKR ${p.net}</td>
+                        <td>${totalQty} Units</td>
+                        <td style="color:var(--success)"><strong>PKR ${totalRev.toLocaleString()}</strong></td>
+                        <td><span class="badge ${badgeClass}">${velocity}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ADMIN CONTROLS
+        function renderAdminProducts() {
+            const tbody = document.getElementById('adminProductBody');
+            tbody.innerHTML = db.products.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.group}</td>
+                    <td>PKR ${p.retail}</td>
+                    <td>PKR ${p.net}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddProductModal() { document.getElementById('productModal').classList.add('active'); }
+        function closeProductModal() { document.getElementById('productModal').classList.remove('active'); }
+
+        function saveNewProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('newProdName').value;
+            const group = document.getElementById('newProdGroup').value;
+            const retail = parseFloat(document.getElementById('newProdRetail').value);
+            const net = parseFloat(document.getElementById('newProdNet').value);
+
+            db.products.push({ id: Date.now(), name, group, retail, net });
+            saveDB();
+            renderAdminProducts();
+            populateDropdowns();
+            closeProductModal();
+        }
+
+        function deleteProduct(id) {
+            db.products = db.products.filter(p => p.id !== id);
+            saveDB();
+            renderAdminProducts();
+            populateDropdowns();
+        }
+
+        function saveTargetUpdate(e) {
+            e.preventDefault();
+            const soId = document.getElementById('targetSO').value;
+            const month = document.getElementById('targetMonth').value;
+            const amt = parseFloat(document.getElementById('targetAmount').value);
+
+            const so = db.salesOfficers.find(s => s.id == soId);
+            if(so) {
+                so.targets[month] = amt;
+                saveDB();
+                renderSOTable();
+                alert(`Target updated for ${so.name} (${month}) to PKR ${amt.toLocaleString()}`);
+            }
+        }
+
+        // EXPORT TO EXCEL
+        function exportTableToExcel(tableId, filename) {
+            const table = document.getElementById(tableId);
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+            XLSX.writeFile(wb, filename + ".xlsx");
+        }
+
+        // JSON SYSTEM BACKUP / RESTORE
+        function exportDatabase() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Uniglobe_System_Backup_${new Date().toISOString().slice(0,10)}.json`);
+            downloadAnchor.click();
+        }
+
+        function importDatabase(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    db = JSON.parse(evt.target.result);
+                    saveDB();
+                    initApp();
+                    alert("System Backup Restored Successfully!");
+                } catch(err) { alert("Invalid Backup File!"); }
+            };
+            reader.readAsText(file);
         }
     </script>
 </body>
 </html>
+```
