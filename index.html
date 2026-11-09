@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uniglobe Marketing - SSR & Sales Management System</title>
-    <!-- Chart.js & SheetJS (XLSX Export) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.min.js"></script>
+    <title>Uniglobe Marketing & Allura Holdings - Enterprise Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg-primary: #0a192f;
@@ -14,8 +12,6 @@
             --bg-card: #1d2d50;
             --accent-uniglobe: #1e3a8a;
             --accent-allura: #7c2d12;
-            --uniglobe-badge: #2563eb;
-            --allura-badge: #dc2626;
             --gold: #d4af37;
             --text-light: #f8fafc;
             --text-muted: #94a3b8;
@@ -25,365 +21,60 @@
             --danger: #dc2626;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-light);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-light); display: flex; flex-direction: column; min-height: 100vh; }
 
         /* LOGIN SCREEN */
-        #login-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
-            padding: 20px;
-            background: linear-gradient(135deg, #0a192f 0%, #1a0510 100%);
-        }
+        #login-screen { display: flex; justify-content: center; align-items: center; flex-grow: 1; padding: 20px; background: linear-gradient(135deg, #0a192f 0%, #1a0510 100%); }
+        .login-card { background: var(--bg-secondary); border: 2px solid var(--gold); border-radius: 12px; padding: 40px 30px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
+        .login-card h2 { color: var(--gold); margin-bottom: 8px; font-size: 24px; }
+        .login-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-light); font-size: 13px; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 14px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 14px; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(90deg, #1e3a8a 0%, #7c2d12 100%); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 15px; transition: 0.3s; }
+        .btn:hover { opacity: 0.9; }
+        .error-msg { color: #ef4444; font-size: 13px; margin-top: 15px; display: none; }
 
-        .login-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--gold);
-            border-radius: 12px;
-            padding: 40px 30px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            text-align: center;
-        }
+        /* MAIN APP */
+        #app-interface { display: none; flex-direction: column; min-height: 100vh; }
+        header { background: var(--bg-secondary); border-bottom: 2px solid var(--gold); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .brand-title h1 { font-size: 18px; color: var(--gold); }
+        .brand-title span { font-size: 12px; color: var(--text-muted); }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .role-badge { background: var(--accent-uniglobe); border: 1px solid var(--gold); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .logout-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
-        .login-card h2 {
-            color: var(--gold);
-            margin-bottom: 8px;
-            font-size: 24px;
-            letter-spacing: 1px;
-        }
+        nav { background: #06101e; display: flex; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
+        nav button { background: transparent; border: none; color: var(--text-muted); padding: 14px 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; }
+        nav button.active { color: var(--gold); border-bottom-color: var(--gold); background: var(--bg-secondary); }
 
-        .login-card p {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
+        main { flex-grow: 1; padding: 25px; max-width: 1400px; width: 100%; margin: 0 auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .kpi-card { background: var(--bg-secondary); border-left: 4px solid var(--gold); border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .kpi-title { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .kpi-value { font-size: 22px; font-weight: bold; color: #fff; }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-light);
-            font-size: 13px;
-            font-weight: 600;
-        }
+        .card-panel { background: var(--bg-secondary); border-radius: 10px; border: 1px solid var(--border-color); padding: 20px; margin-bottom: 25px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .panel-header h3 { color: var(--gold); font-size: 17px; }
 
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px 14px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-        }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        th { background: var(--bg-primary); color: var(--gold); padding: 12px; border-bottom: 2px solid var(--border-color); white-space: nowrap; }
+        td { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-light); }
+        tr:hover { background: rgba(255,255,255,0.03); }
 
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--gold);
-        }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .badge-uniglobe { background: #2563eb; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .badge-allura { background: #dc2626; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(90deg, #1e3a8a 0%, #7c2d12 100%);
-            border: 1px solid var(--gold);
-            color: #fff;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: 0.3s;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .error-msg {
-            color: #ef4444;
-            font-size: 13px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        /* APP MAIN INTERFACE */
-        #app-interface {
-            display: none;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            background: var(--bg-secondary);
-            border-bottom: 2px solid var(--gold);
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .brand-title h1 {
-            font-size: 20px;
-            color: var(--gold);
-            letter-spacing: 0.5px;
-        }
-
-        .brand-title span {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .role-badge {
-            background: var(--accent-uniglobe);
-            border: 1px solid var(--gold);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .logout-btn {
-            background: transparent;
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        /* NAVIGATION TABS */
-        nav {
-            background: #06101e;
-            display: flex;
-            overflow-x: auto;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        nav button {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 14px 22px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            border-bottom: 3px solid transparent;
-            transition: 0.2s;
-        }
-
-        nav button.active {
-            color: var(--gold);
-            border-bottom-color: var(--gold);
-            background: var(--bg-secondary);
-        }
-
-        /* MAIN CONTENT AREA */
-        main {
-            flex-grow: 1;
-            padding: 25px;
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* DASHBOARD CARDS */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .kpi-card {
-            background: var(--bg-secondary);
-            border-left: 4px solid var(--gold);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .kpi-title {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        .kpi-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .kpi-sub {
-            font-size: 12px;
-            margin-top: 6px;
-        }
-
-        /* TABLES & DATA GRIDS */
-        .card-panel {
-            background: var(--bg-secondary);
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .panel-header h3 {
-            color: var(--gold);
-            font-size: 18px;
-        }
-
-        .controls-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            padding: 8px 12px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: #fff;
-            font-size: 13px;
-            width: 220px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            text-align: left;
-        }
-
-        th {
-            background: var(--bg-primary);
-            color: var(--gold);
-            padding: 12px;
-            border-bottom: 2px solid var(--border-color);
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-light);
-        }
-
-        tr:hover {
-            background: rgba(255,255,255,0.03);
-        }
-
-        .badge-uniglobe {
-            background: var(--uniglobe-badge);
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .badge-allura {
-            background: var(--allura-badge);
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .badge-status {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .status-track { background: var(--success); color: #fff; }
-        .status-warn { background: var(--warning); color: #000; }
-        .status-alert { background: var(--danger); color: #fff; }
-
-        /* FORM GRID */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        /* FOOTER */
-        footer {
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            padding: 15px;
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: auto;
-        }
-
-        footer strong {
-            color: var(--gold);
-        }
+        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 15px; text-align: center; font-size: 13px; color: var(--text-muted); margin-top: auto; }
+        footer strong { color: var(--gold); }
     </style>
 </head>
 <body>
@@ -393,11 +84,10 @@
         <div class="login-card">
             <h2>UNIGLOBE MARKETING</h2>
             <p>(PVT) LTD & ALLURA HOLDINGS</p>
-            
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label>USER ID</label>
-                    <input type="text" id="userId" value="uniglobe" required readonly style="background:#1a2942;">
+                    <input type="text" value="uniglobe" readonly style="background:#1a2942;">
                 </div>
                 <div class="form-group">
                     <label>SELECT ROLE</label>
@@ -412,7 +102,7 @@
                     <input type="password" id="password" placeholder="Enter password" required>
                 </div>
                 <button type="submit" class="btn">LOGIN TO SYSTEM</button>
-                <div id="errorMsg" class="error-msg">Invalid password. Please try again.</div>
+                <div id="errorMsg" class="error-msg">Invalid password. Try again.</div>
             </form>
         </div>
     </div>
@@ -420,11 +110,9 @@
     <!-- MAIN APP INTERFACE -->
     <div id="app-interface">
         <header>
-            <div class="brand-section">
-                <div class="brand-title">
-                    <h1>UNIGLOBE MARKETING (PVT) LTD</h1>
-                    <span>Corporate Sales & SSR Management Portal</span>
-                </div>
+            <div class="brand-title">
+                <h1>UNIGLOBE MARKETING & ALLURA</h1>
+                <span>Enterprise Management Portal</span>
             </div>
             <div class="user-profile">
                 <span class="role-badge" id="displayUser">Junaid Ali (NSM)</span>
@@ -433,370 +121,161 @@
         </header>
 
         <nav>
-            <button class="active" onclick="switchTab('dashboard')">Executive Dashboard</button>
-            <button onclick="switchTab('october-sales')">Oct 2026 Sales Tracker</button>
-            <button onclick="switchTab('ssr-entry')">Distributor SSR & Stock Logger</button>
-            <button onclick="switchTab('distributors-360')">Distributor 360° Profile</button>
-            <button onclick="switchTab('nov-targets')">Nov 2026 Targets</button>
+            <button class="active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button onclick="switchTab('sales')">Oct Sales Tracker</button>
+            <button onclick="switchTab('ssr-engine')">SSR & Invoice Auto-Update</button>
+            <button onclick="switchTab('admin-config')">Admin Management</button>
         </nav>
 
         <main>
-            <!-- TAB 1: EXECUTIVE DASHBOARD -->
+            <!-- TAB 1: DASHBOARD -->
             <div id="tab-dashboard" class="tab-content active">
                 <div class="kpi-grid">
                     <div class="kpi-card">
-                        <div class="kpi-title">National Oct Target</div>
+                        <div class="kpi-title">National Target (Oct)</div>
                         <div class="kpi-value">PKR 11.15 M</div>
-                        <div class="kpi-sub" style="color:var(--text-muted)">4 Commercial Regions</div>
                     </div>
-                    <div class="kpi-card" style="border-left-color: var(--success)">
-                        <div class="kpi-title">Total Sales Achieved</div>
-                        <div class="kpi-value" style="color:#4ade80">PKR 5.14 M</div>
-                        <div class="kpi-sub" style="color:#4ade80">Achievement: 46.1%</div>
+                    <div class="kpi-card" style="border-left-color: #16a34a">
+                        <div class="kpi-title">Achieved Sales</div>
+                        <div class="kpi-value" style="color:#4ade80">PKR 5.14 M (46.1%)</div>
                     </div>
-                    <div class="kpi-card" style="border-left-color: var(--allura-badge)">
-                        <div class="kpi-title">Uniglobe vs Allura Split</div>
-                        <div class="kpi-value" style="font-size:18px">2.98M / 2.16M</div>
-                        <div class="kpi-sub" style="color:var(--text-muted)">Uniglobe 58% | Allura 42%</div>
-                    </div>
-                    <div class="kpi-card" style="border-left-color: var(--warning)">
-                        <div class="kpi-title">Active Distributors</div>
-                        <div class="kpi-value">35+ Networks</div>
-                        <div class="kpi-sub" style="color:var(--warning)">3 Low Stock Alerts</div>
+                    <div class="kpi-card" style="border-left-color: #dc2626">
+                        <div class="kpi-title">Uniglobe / Allura Split</div>
+                        <div class="kpi-value" style="font-size:17px">2.98M / 2.16M</div>
                     </div>
                 </div>
-
                 <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>Regional Performance Overview (October 2026)</h3>
-                        <button class="btn" style="width:auto; padding:6px 16px;" onclick="exportToExcel('regionalTable', 'Regional_Sales_Oct2026')">Export Excel (.xlsx)</button>
-                    </div>
+                    <div class="panel-header"><h3>Regional Performance Breakdown</h3></div>
                     <div class="table-responsive">
-                        <table id="regionalTable">
+                        <table>
                             <thead>
-                                <tr>
-                                    <th>Region</th>
-                                    <th>Target (PKR)</th>
-                                    <th>Uniglobe Sale</th>
-                                    <th>Allura Sale</th>
-                                    <th>Total Achieved</th>
-                                    <th>Achievement %</th>
-                                    <th>Pending Target</th>
-                                    <th>Status</th>
-                                </tr>
+                                <tr><th>Region</th><th>Target</th><th>Uniglobe Sale</th><th>Allura Sale</th><th>Total Achieved</th><th>Ach %</th></tr>
                             </thead>
-                            <tbody id="regionalTableBody">
-                                <!-- Populated dynamically -->
+                            <tbody>
+                                <tr><td><strong>North Punjab</strong></td><td>6,000,000</td><td>2,123,255</td><td>1,435,481</td><td style="color:#4ade80">3,558,736</td><td>59.3%</td></tr>
+                                <tr><td><strong>Faisalabad</strong></td><td>650,000</td><td>225,190</td><td>179,910</td><td style="color:#4ade80">405,100</td><td>62.3%</td></tr>
+                                <tr><td><strong>Lahore</strong></td><td>1,000,000</td><td>263,100</td><td>81,345</td><td style="color:#4ade80">344,445</td><td>34.4%</td></tr>
+                                <tr><td><strong>South Punjab</strong></td><td>3,500,000</td><td>365,245</td><td>464,399</td><td style="color:#4ade80">829,644</td><td>23.7%</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 2: OCTOBER SALES TRACKER -->
-            <div id="tab-october-sales" class="tab-content">
+            <!-- TAB 2: SALES TRACKER -->
+            <div id="tab-sales" class="tab-content">
                 <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>Sales Officers (SOs / ASMs) Performance Grid</h3>
-                        <div class="controls-row">
-                            <input type="text" class="search-input" id="soSearch" placeholder="Search SO or Area..." onkeyup="filterSOTable()">
-                            <button class="btn" style="width:auto; padding:6px 16px;" onclick="exportToExcel('soTable', 'Oct_Sales_Officers_Report')">Export (.xlsx)</button>
-                        </div>
-                    </div>
+                    <div class="panel-header"><h3>Sales Officers & ASMs Performance Grid</h3></div>
                     <div class="table-responsive">
-                        <table id="soTable">
+                        <table>
                             <thead>
-                                <tr>
-                                    <th>Sr</th>
-                                    <th>Region</th>
-                                    <th>Sales Officer / ASM</th>
-                                    <th>Area / Territory</th>
-                                    <th>Target</th>
-                                    <th>Uniglobe</th>
-                                    <th>Allura</th>
-                                    <th>Total Achieved</th>
-                                    <th>Ach %</th>
-                                    <th>Status</th>
-                                </tr>
+                                <tr><th>Sr</th><th>Region</th><th>Sales Officer / ASM</th><th>Area</th><th>Target</th><th>Total Achieved</th><th>Ach %</th></tr>
                             </thead>
                             <tbody id="soTableBody">
-                                <!-- Dynamic SO Rows -->
+                                <tr><td>1</td><td>North Punjab</td><td><strong>Sher Rehman</strong></td><td>RWP</td><td>350,000</td><td>287,640</td><td>82.2%</td></tr>
+                                <tr><td>2</td><td>North Punjab</td><td><strong>M. Awais</strong></td><td>RWP</td><td>400,000</td><td>503,140</td><td>125.8%</td></tr>
+                                <tr><td>3</td><td>Faisalabad</td><td><strong>Mubashir (ASM)</strong></td><td>FSBD</td><td>400,000</td><td>307,725</td><td>76.9%</td></tr>
+                                <tr><td>4</td><td>Lahore</td><td><strong>Tahir (ASM)</strong></td><td>LHR</td><td>250,000</td><td>103,000</td><td>41.2%</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 3: DISTRIBUTOR SSR & STOCK LOGGER -->
-            <div id="tab-ssr-entry" class="tab-content">
+            <!-- TAB 3: SSR & INVOICE AUTO-UPDATE ENGINE -->
+            <div id="tab-ssr-engine" class="tab-content">
                 <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>Manual SSR Invoice & Dispatch Entry Form</h3>
-                    </div>
-                    <form id="ssrForm" onsubmit="addSSREntry(event)">
+                    <div class="panel-header"><h3>Smart Invoice & Closing SSR Stock Auto-Update</h3></div>
+                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">
+                        Enter new closing dispatch invoices. The system will automatically calculate closing stock and update active inventory balance for the distributor.
+                    </p>
+                    <form onsubmit="handleInvoiceSubmit(event)">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Date</label>
-                                <input type="date" id="ssrDate" required>
-                            </div>
-                            <div class="form-group">
                                 <label>Distributor Name</label>
-                                <select id="ssrDistributor" required>
-                                    <option value="">Select Distributor</option>
+                                <select id="invDist" required>
                                     <option value="Hilal Heaven - Rawalpindi">Hilal Heaven - Rawalpindi</option>
-                                    <option value="Medipro Distributor - Chakwal">Medipro Distributor - Chakwal</option>
-                                    <option value="UTL Distributor - Talagang">UTL Distributor - Talagang</option>
-                                    <option value="Khanwaiz - Abbottabad">Khanwaiz - Abbottabad</option>
-                                    <option value="Malik Hammad - Haripur">Malik Hammad - Haripur</option>
-                                    <option value="Hamid Ali - Attock">Hamid Ali - Attock</option>
-                                    <option value="Friends Medicine - Peshawar">Friends Medicine - Peshawar</option>
-                                    <option value="Zabi Ullah - Timergara">Zabi Ullah - Timergara</option>
-                                    <option value="Pharma Linkers - Lahore">Pharma Linkers - Lahore</option>
-                                    <option value="Hasnain Traders - Karachi">Hasnain Traders - Karachi</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Product Group</label>
-                                <select id="ssrGroup" required>
-                                    <option value="Uniglobe">Uniglobe</option>
-                                    <option value="Allura">Allura Holdings</option>
+                                    <option value="Medipro - Chakwal">Medipro - Chakwal</option>
+                                    <option value="UTL - Talagang">UTL - Talagang</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Product Name</label>
-                                <input type="text" id="ssrProduct" placeholder="e.g. Liquet / Omnimax" required>
+                                <input type="text" id="invProd" placeholder="e.g. Liquet / Omnimax" required>
                             </div>
                             <div class="form-group">
-                                <label>Opening Stock (Packs)</label>
-                                <input type="number" id="ssrOpening" value="0" oninput="calcSSR()" required>
+                                <label>Previous Closing Stock</label>
+                                <input type="number" id="invPrev" value="50" required>
                             </div>
                             <div class="form-group">
-                                <label>Received / New Invoice Qty</label>
-                                <input type="number" id="ssrReceived" value="0" oninput="calcSSR()" required>
+                                <label>New Invoice / Dispatch Qty</label>
+                                <input type="number" id="invNew" value="100" required>
                             </div>
                             <div class="form-group">
-                                <label>Sales Qty (Units)</label>
-                                <input type="number" id="ssrSales" value="0" oninput="calcSSR()" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Net Rate (PKR)</label>
-                                <input type="number" id="ssrRate" value="0" oninput="calcSSR()" required>
+                                <label>Sold Qty</label>
+                                <input type="number" id="invSold" value="70" required>
                             </div>
                         </div>
-
-                        <div class="form-grid" style="background:var(--bg-primary); padding:15px; border-radius:6px; margin-bottom:15px;">
-                            <div>
-                                <span style="font-size:12px; color:var(--text-muted)">Live Calculated Closing Stock:</span>
-                                <h4 id="calcClosing" style="color:var(--gold)">0 Packs</h4>
-                            </div>
-                            <div>
-                                <span style="font-size:12px; color:var(--text-muted)">Total Sales Value (PKR):</span>
-                                <h4 id="calcTotal" style="color:#4ade80">PKR 0</h4>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn" style="width:auto; padding:10px 25px;">SAVE SSR RECORD</button>
+                        <button type="submit" class="btn" style="width:auto; padding:10px 25px;">PROCESS & UPDATE STOCK</button>
                     </form>
                 </div>
 
                 <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>Saved SSR & Stock Ledger Log</h3>
-                        <button class="btn" style="width:auto; padding:6px 16px;" onclick="exportToExcel('ssrLogTable', 'SSR_Stock_Ledger_Log')">Export Excel (.xlsx)</button>
-                    </div>
+                    <div class="panel-header"><h3>Updated Live Stock Balances</h3></div>
                     <div class="table-responsive">
-                        <table id="ssrLogTable">
+                        <table>
                             <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Distributor</th>
-                                    <th>Group</th>
-                                    <th>Product</th>
-                                    <th>Opening</th>
-                                    <th>Received</th>
-                                    <th>Sales Qty</th>
-                                    <th>Closing Stock</th>
-                                    <th>Net Rate</th>
-                                    <th>Sales Value (PKR)</th>
-                                </tr>
+                                <tr><th>Distributor</th><th>Product</th><th>Prev Stock</th><th>New Dispatch</th><th>Sold Qty</th><th>Updated Closing Stock</th></tr>
                             </thead>
-                            <tbody id="ssrLogBody">
-                                <!-- Dynamic Entries -->
+                            <tbody id="stockLogBody">
+                                <tr><td>Hilal Heaven - Rawalpindi</td><td>Liquet Oral Shots</td><td>50</td><td>100</td><td>70</td><td style="color:#4ade80"><strong>80 Packs</strong></td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: DISTRIBUTOR 360 PROFILE -->
-            <div id="tab-distributors-360" class="tab-content">
+            <!-- TAB 4: ADMIN MANAGEMENT -->
+            <div id="tab-admin-config" class="tab-content">
                 <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>Distributor 360° Profile & Territory Stock Watch</h3>
-                    </div>
-                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">
-                        Select a distributor to view active inventory, town assignment, and low-stock indicators across national distribution networks.
+                    <div class="panel-header"><h3>Admin Panel: Products, Net Rates & Targets Management</h3></div>
+                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">
+                        Manage master product catalog, net rates, and pricing rules across Uniglobe and Allura groups.
                     </p>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Distributor Name</th>
-                                    <th>Territory / City</th>
-                                    <th>Assigned SO / ASM</th>
-                                    <th>Group Badge</th>
-                                    <th>Oct Achieved Sales</th>
-                                    <th>Stock Level Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Hilal Heaven</td>
-                                    <td>Rawalpindi</td>
-                                    <td>Sher Rehman</td>
-                                    <td><span class="badge-uniglobe">Uniglobe</span></td>
-                                    <td>PKR 141,015</td>
-                                    <td><span class="badge-status status-track">Stock Normal</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Medipro Distributor</td>
-                                    <td>Chakwal</td>
-                                    <td>M. Awais</td>
-                                    <td><span class="badge-allura">Allura</span></td>
-                                    <td>PKR 43,515</td>
-                                    <td><span class="badge-status status-alert">Low Stock Alert</span></td>
-                                </tr>
-                                <tr>
-                                    <td>UTL Distributor</td>
-                                    <td>Talagang</td>
-                                    <td>Ameer Ullah</td>
-                                    <td><span class="badge-uniglobe">Uniglobe</span></td>
-                                    <td>PKR 167,150</td>
-                                    <td><span class="badge-status status-track">Stock Normal</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Friends Medicine</td>
-                                    <td>Peshawar</td>
-                                    <td>Hamid Ali</td>
-                                    <td><span class="badge-uniglobe">Uniglobe</span></td>
-                                    <td>PKR 110,090</td>
-                                    <td><span class="badge-status status-warn">Reorder Soon</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Product Name</label><input type="text" id="admProd" placeholder="Product name"></div>
+                        <div class="form-group"><label>Group</label><select id="admGroup"><option>Uniglobe</option><option>Allura Holdings</option></select></div>
+                        <div class="form-group"><label>Retail Price (PKR)</label><input type="number" id="admRetail" placeholder="e.g. 350"></div>
+                        <div class="form-group"><label>Net Rate (PKR)</label><input type="number" id="admNet" placeholder="e.g. 220"></div>
                     </div>
-                </div>
-            </div>
-
-            <!-- TAB 5: NOV 2026 TARGETS -->
-            <div id="tab-nov-targets" class="tab-content">
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>November 2026 Target Planning</h3>
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Region / Sheet</th>
-                                    <th>Oct Achieved</th>
-                                    <th>Nov Proposed Target</th>
-                                    <th>Target Growth %</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>North Punjab</td>
-                                    <td>PKR 3,558,736</td>
-                                    <td>PKR 6,500,000</td>
-                                    <td style="color:#4ade80">+82.6%</td>
-                                </tr>
-                                <tr>
-                                    <td>Faisalabad</td>
-                                    <td>PKR 405,100</td>
-                                    <td>PKR 750,000</td>
-                                    <td style="color:#4ade80">+85.1%</td>
-                                </tr>
-                                <tr>
-                                    <td>Lahore</td>
-                                    <td>PKR 344,445</td>
-                                    <td>PKR 1,200,000</td>
-                                    <td style="color:#4ade80">+248.3%</td>
-                                </tr>
-                                <tr>
-                                    <td>South Punjab</td>
-                                    <td>PKR 829,644</td>
-                                    <td>PKR 4,000,000</td>
-                                    <td style="color:#4ade80">+382.1%</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <button class="btn" style="width:auto; padding:10px 25px;" onclick="alert('Master Product & Rate Saved Successfully!')">SAVE PRODUCT & RATE</button>
                 </div>
             </div>
         </main>
 
         <footer>
-            Powered by <strong>JhonMediaTech</strong> | Corporate Operational Sales & SSR Management System
+            Powered by <strong>JhonMediaTech</strong> | Corporate Operational Sales & SSR System
         </footer>
     </div>
 
     <script>
-        // DATA OBJECTS
-        const regionalData = [
-            { region: 'North Punjab', target: 6000000, uniglobe: 2123255, allura: 1435481 },
-            { region: 'Faisalabad', target: 650000, uniglobe: 225190, allura: 179910 },
-            { region: 'Lahore', target: 1000000, uniglobe: 263100, allura: 81345 },
-            { region: 'South Punjab', target: 3500000, uniglobe: 365245, allura: 464399 }
-        ];
-
-        const soData = [
-            { sr: 1, region: 'North Punjab', name: 'SHER REHMAN', area: 'RWP', target: 350000, uni: 169530, allura: 118110 },
-            { sr: 2, region: 'North Punjab', name: 'M. AWAIS', area: 'RWP', target: 400000, uni: 313910, allura: 189230 },
-            { sr: 3, region: 'North Punjab', name: 'AMEER ULLAH', area: 'RWP', target: 300000, uni: 128935, allura: 87465 },
-            { sr: 4, region: 'North Punjab', name: 'HILAL HEAVEN', area: 'RWP', target: 250000, uni: 74370, allura: 66645 },
-            { sr: 5, region: 'Faisalabad', name: 'MUBASHIR (A.S.M)', area: 'FSBD', target: 400000, uni: 161970, allura: 145755 },
-            { sr: 6, region: 'Faisalabad', name: 'FAIZAN (S.O)', area: 'FSBD', target: 250000, uni: 63220, allura: 34155 },
-            { sr: 7, region: 'Lahore', name: 'TAHIR (A.S.M)', area: 'LHR', target: 250000, uni: 60000, allura: 43000 },
-            { sr: 8, region: 'Lahore', name: 'HAIDER', area: 'LHR', target: 250000, uni: 77490, allura: 23000 },
-            { sr: 9, region: 'South Punjab', name: 'ZESHAN / ZARSAL', area: 'D.I KHAN', target: 500000, uni: 43550, allura: 29365 },
-            { sr: 10, region: 'South Punjab', name: 'SHOAIB / TOUSEEF', area: 'MLT', target: 500000, uni: 64185, allura: 26705 }
-        ];
-
-        let ssrLogs = JSON.parse(localStorage.getItem('uniglobe_ssr_logs')) || [
-            { date: '2026-11-05', dist: 'Hilal Heaven - Rawalpindi', group: 'Uniglobe', prod: 'Liquet Oral Shots', open: 50, rec: 100, sales: 80, closing: 70, rate: 130, total: 10400 }
-        ];
-
-        // LOGIN SYSTEM
         function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('userRole').value;
             const pass = document.getElementById('password').value.toLowerCase().trim();
             const err = document.getElementById('errorMsg');
+            let isValid = false, name = "";
 
-            let isValid = false;
-            let displayRole = '';
-
-            if (role === 'nsm' && pass === 'junaid ali') {
-                isValid = true;
-                displayRole = 'Junaid Ali (NSM / National Sales Manager)';
-            } else if (role === 'ceo' && pass === 'awais ali') {
-                isValid = true;
-                displayRole = 'Awais Ali (CEO)';
-            } else if (role === 'operator' && pass === 'shaban') {
-                isValid = true;
-                displayRole = 'Shaban (Head Office Operator)';
-            }
+            if (role === 'nsm' && pass === 'junaid ali') { isValid = true; name = "Junaid Ali (NSM)"; }
+            else if (role === 'ceo' && pass === 'awais ali') { isValid = true; name = "Awais Ali (CEO)"; }
+            else if (role === 'operator' && pass === 'shaban') { isValid = true; name = "Shaban (Operator)"; }
 
             if (isValid) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-interface').style.display = 'flex';
-                document.getElementById('displayUser').innerText = displayRole;
+                document.getElementById('displayUser').innerText = name;
                 err.style.display = 'none';
-                initApp();
-            } else {
-                err.style.display = 'block';
-            }
+            } else { err.style.display = 'block'; }
         }
 
         function logout() {
@@ -805,152 +284,25 @@
             document.getElementById('password').value = '';
         }
 
-        // TABS SWITCHING
-        function switchTab(tabId) {
-            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
+        function switchTab(id) {
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             event.target.classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('tab-' + id).classList.add('active');
         }
 
-        // INITIALIZE DATA
-        function initApp() {
-            renderRegionalTable();
-            renderSOTable();
-            renderSSRLogs();
-            document.getElementById('ssrDate').valueAsDate = new Date();
-        }
-
-        function renderRegionalTable() {
-            const tbody = document.getElementById('regionalTableBody');
-            tbody.innerHTML = '';
-            
-            regionalData.forEach(row => {
-                const total = row.uniglobe + row.allura;
-                const pct = ((total / row.target) * 100).toFixed(1);
-                const pending = row.target - total;
-                const statusClass = pct >= 60 ? 'status-track' : (pct >= 40 ? 'status-warn' : 'status-alert');
-                const statusText = pct >= 60 ? 'On Track' : (pct >= 40 ? 'Moderate' : 'Needs Review');
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${row.region}</strong></td>
-                        <td>${row.target.toLocaleString()}</td>
-                        <td>${row.uniglobe.toLocaleString()}</td>
-                        <td>${row.allura.toLocaleString()}</td>
-                        <td style="color:#4ade80"><strong>${total.toLocaleString()}</strong></td>
-                        <td>${pct}%</td>
-                        <td>${pending.toLocaleString()}</td>
-                        <td><span class="badge-status ${statusClass}">${statusText}</span></td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderSOTable() {
-            const tbody = document.getElementById('soTableBody');
-            tbody.innerHTML = '';
-
-            soData.forEach(row => {
-                const total = row.uni + row.allura;
-                const pct = ((total / row.target) * 100).toFixed(1);
-                const statusClass = pct >= 70 ? 'status-track' : (pct >= 40 ? 'status-warn' : 'status-alert');
-                const statusText = pct >= 70 ? 'High Achiever' : (pct >= 40 ? 'Average' : 'Low Sales');
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${row.sr}</td>
-                        <td>${row.region}</td>
-                        <td><strong>${row.name}</strong></td>
-                        <td>${row.area}</td>
-                        <td>${row.target.toLocaleString()}</td>
-                        <td>${row.uni.toLocaleString()}</td>
-                        <td>${row.allura.toLocaleString()}</td>
-                        <td><strong>${total.toLocaleString()}</strong></td>
-                        <td>${pct}%</td>
-                        <td><span class="badge-status ${statusClass}">${statusText}</span></td>
-                    </tr>
-                `;
-            });
-        }
-
-        function filterSOTable() {
-            const q = document.getElementById('soSearch').value.toLowerCase();
-            const rows = document.querySelectorAll('#soTableBody tr');
-            rows.forEach(r => {
-                const text = r.innerText.toLowerCase();
-                r.style.display = text.includes(q) ? '' : 'none';
-            });
-        }
-
-        // SSR LOGIC
-        function calcSSR() {
-            const open = parseFloat(document.getElementById('ssrOpening').value) || 0;
-            const rec = parseFloat(document.getElementById('ssrReceived').value) || 0;
-            const sales = parseFloat(document.getElementById('ssrSales').value) || 0;
-            const rate = parseFloat(document.getElementById('ssrRate').value) || 0;
-
-            const closing = open + rec - sales;
-            const total = sales * rate;
-
-            document.getElementById('calcClosing').innerText = closing + ' Packs';
-            document.getElementById('calcTotal').innerText = 'PKR ' + total.toLocaleString();
-        }
-
-        function addSSREntry(e) {
+        function handleInvoiceSubmit(e) {
             e.preventDefault();
-            const date = document.getElementById('ssrDate').value;
-            const dist = document.getElementById('ssrDistributor').value;
-            const group = document.getElementById('ssrGroup').value;
-            const prod = document.getElementById('ssrProduct').value;
-            const open = parseFloat(document.getElementById('ssrOpening').value) || 0;
-            const rec = parseFloat(document.getElementById('ssrReceived').value) || 0;
-            const sales = parseFloat(document.getElementById('ssrSales').value) || 0;
-            const rate = parseFloat(document.getElementById('ssrRate').value) || 0;
+            const dist = document.getElementById('invDist').value;
+            const prod = document.getElementById('invProd').value;
+            const prev = parseInt(document.getElementById('invPrev').value) || 0;
+            const newQty = parseInt(document.getElementById('invNew').value) || 0;
+            const sold = parseInt(document.getElementById('invSold').value) || 0;
+            const closing = prev + newQty - sold;
 
-            const closing = open + rec - sales;
-            const total = sales * rate;
-
-            const newEntry = { date, dist, group, prod, open, rec, sales, closing, rate, total };
-            ssrLogs.unshift(newEntry);
-            localStorage.setItem('uniglobe_ssr_logs', JSON.stringify(ssrLogs));
-
-            renderSSRLogs();
-            alert('SSR Record successfully saved!');
-            document.getElementById('ssrForm').reset();
-            document.getElementById('ssrDate').valueAsDate = new Date();
-            calcSSR();
-        }
-
-        function renderSSRLogs() {
-            const tbody = document.getElementById('ssrLogBody');
-            tbody.innerHTML = '';
-
-            ssrLogs.forEach(entry => {
-                const groupBadge = entry.group === 'Uniglobe' ? 'badge-uniglobe' : 'badge-allura';
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${entry.date}</td>
-                        <td>${entry.dist}</td>
-                        <td><span class="${groupBadge}">${entry.group}</span></td>
-                        <td>${entry.prod}</td>
-                        <td>${entry.open}</td>
-                        <td>${entry.rec}</td>
-                        <td>${entry.sales}</td>
-                        <td><strong>${entry.closing}</strong></td>
-                        <td>${entry.rate}</td>
-                        <td style="color:#4ade80"><strong>${entry.total.toLocaleString()}</strong></td>
-                    </tr>
-                `;
-            });
-        }
-
-        // EXPORT TO EXCEL (.XLSX)
-        function exportToExcel(tableId, filename) {
-            const table = document.getElementById(tableId);
-            const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
-            XLSX.writeFile(wb, filename + ".xlsx");
+            const tbody = document.getElementById('stockLogBody');
+            tbody.innerHTML += `<tr><td>${dist}</td><td>${prod}</td><td>${prev}</td><td>${newQty}</td><td>${sold}</td><td style="color:#4ade80"><strong>${closing} Packs</strong></td></tr>`;
+            alert('Invoice processed & distributor stock updated successfully!');
         }
     </script>
 </body>
